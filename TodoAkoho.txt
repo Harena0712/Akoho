@@ -18,14 +18,42 @@ Akoho
 
     - Fonction:
         . CRUD pour chaque table
-        . nbAkohoReste(listLot, listLotMaty, date)
-        . achatLotInit(listLot, listRace, date)
-        . prixSakafo(listLot, listRace, confSakafo, date)
-        . nbAkohoMaty(listLot , listLotMaty, date)
-        . poidsMoyenne(listLot, confSakafo, date)
-        . prixLot(listLot, listRace, date)
-        . nbAtody(listLot, listLotAtody, date)
-        . benefice(prixLot, valeurAtody, acaht)
+
+        . nbAkohoReste(lot, listLotMaty, date)
+            → nbReste = lot.nb - SUM(lotMaty.nbMaty)  où lotMaty.idLot = lot.id ET lotMaty.date <= date
+
+        . nbAkohoMaty(lot, listLotMaty, date)
+            → maty = SUM(lotMaty.nbMaty)  où lotMaty.idLot = lot.id ET lotMaty.date <= date
+
+        . achatLotInit(lot, race, listConfSakafo)
+            → poidsInit = SUM(confSakafo.variationPoid)  de semaine 0 à semaine lot.age (pour la race du lot)
+            → achat = lot.nb × poidsInit × race.pvGg
+            → Si lot issu d'éclosion (idLotAtody != null) → achat = 0
+
+        . prixSakafo(lot, race, listLotMaty, listConfSakafo, date)
+            → totalSakafoParPoule = somme semaine par semaine de confSakafo.sakafoG
+              (semaine complète = sakafoG, semaine partielle = jours × sakafoG / 7)
+            → nbMoyen = lot.nb - maty / 2
+            → prixSakafo = nbMoyen × totalSakafoParPoule × race.puGg
+
+        . poidsMoyenne(lot, listConfSakafo, date)
+            → poidsSemaine(S) = SUM(confSakafo.variationPoid)  de semaine 0 à S
+              (age 0 = poids naissance, ages suivants = gain cumulé)
+            → poidsMoyenne = MOYENNE(poidsSemaine(0), poidsSemaine(1), ..., poidsSemaine(ageCourant))
+              Si semaine partielle → on ajoute un point supplémentaire avec gain proportionnel (fraction × variationPoid)
+
+        . prixLot(lot, race, listLotMaty, listConfSakafo, date)
+            → poidsActuel = SUM(confSakafo.variationPoid)  de semaine 0 à ageCourant (avec fraction pour semaine partielle)
+            → prixLot = nbReste × poidsActuel × race.pvGg
+
+        . nbAtody(lot, listLotAtody, date)
+            → nbAtody = SUM(lotAtody.nbAtody)  où lotAtody.idLot = lot.id ET lotAtody.date <= date
+
+        . valeurAtody(lot, race, listLotAtody, date)
+            → valeurAtody = nbAtody × race.prixAtody
+
+        . benefice(prixLot, valeurAtody, achat, prixSakafo)
+            → benefice = prixLot + valeurAtody - achat - prixSakafo
 
 
 
