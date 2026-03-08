@@ -1,0 +1,64 @@
+Akoho
+    - Table:
+        . lot: id, idRace, nb, age, date
+        . lotMaty: id, idLot,nbMaty, date
+        . lotAtody: id, idLot, nbAtody, date
+        . race: id, libelle, puGg, pvGg, prixAtody
+        . confSakafo: id, age, idRace, variationPoid, sakagoG
+        . incubation: id, idLot, nbAtodyF, date
+
+    - Model:
+        . Lot: id, idRace, nb, age, date
+        . lotMaty: id, idLot,nbMaty, date
+        . LotAtody: id, idLot, nbAtody, date
+        . Race: id, libelle, puGg, pvGg, prixAtody
+        . ConfSakafo: id, idRace, variationPoid, sakagoG
+        . Incubation: id, idLotAtody, nbAtodyF, date
+        . Situation: lot, nb, achat, prixSakafo, maty, poidsMoyenne, prixLot, nbAtody, valeurAtody, benefice
+
+    - Fonction:
+        . CRUD pour chaque table
+        . nbAkohoReste(listLot, listLotMaty, date)
+        . achatLotInit(listLot, listRace, date)
+        . prixSakafo(listLot, listRace, confSakafo, date)
+        . nbAkohoMaty(listLot , listLotMaty, date)
+        . poidsMoyenne(listLot, confSakafo, date)
+        . prixLot(listLot, listRace, date)
+        . nbAtody(listLot, listLotAtody, date)
+        . benefice(prixLot, valeurAtody, acaht)
+
+
+
+
+
+backend/
+├── server.js              ← Point d'entrée Express (port 3000)
+├── package.json
+├── config/
+│   └── db.js              ← Connexion SQL Server (sa/Harena0712)
+├── database/
+│   └── schema.sql         ← Script de création des 6 tables
+├── models/
+│   ├── race.model.js
+│   ├── lot.model.js
+│   ├── lotMaty.model.js
+│   ├── lotAtody.model.js
+│   ├── confSakafo.model.js
+│   ├── incubation.model.js
+│   └── situation.model.js  ← Calcul complet de la situation
+├── controllers/            ← CRUD pour chaque table + situation
+│   ├── race.controller.js
+│   ├── lot.controller.js
+│   ├── lotMaty.controller.js
+│   ├── lotAtody.controller.js
+│   ├── confSakafo.controller.js
+│   ├── incubation.controller.js
+│   └── situation.controller.js
+└── routes/                 ← Routes REST pour chaque ressource
+    ├── race.routes.js       → /api/race
+    ├── lot.routes.js        → /api/lot
+    ├── lotMaty.routes.js    → /api/lot-maty
+    ├── lotAtody.routes.js   → /api/lot-atody
+    ├── confSakafo.routes.js → /api/conf-sakafo
+    ├── incubation.routes.js → /api/incubation
+    └── situation.routes.js  → /api/situation?date=YYYY-MM-DD

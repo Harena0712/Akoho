@@ -1,0 +1,35 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1>Oeufs récoltés</h1>
+    <p class="subtitle">Historique des oeufs récoltés par lot</p>
+  </div>
+
+  @if (oeufs.length > 0) {
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Lot</th>
+            <th>Race</th>
+            <th>Nb oeufs</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (o of oeufs; track o.id) {
+            <tr>
+              <td class="id-cell">{{ o.id }}</td>
+              <td>LOT-{{ o.idLot }}</td>
+              <td>{{ o.race }}</td>
+              <td class="oeufs-cell">{{ o.nbAtody }}</td>
+              <td>{{ o.date | date:'dd/MM/yyyy' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  } @else {
+    <div class="empty-state">Aucun oeuf récolté enregistré</div>
+  }
+</div>

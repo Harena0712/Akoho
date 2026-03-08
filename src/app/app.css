@@ -1,0 +1,23 @@
+:host {
+  display: block;
+  height: 100dvh;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.app-layout {
+  display: flex;
+  min-height: 100dvh;
+}
+
+.main-area {
+  flex: 1;
+  margin-left: 260px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  background: #f1f5f9;
+}
+
+.main-content {
+  flex: 1;
+}

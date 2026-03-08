@@ -1,0 +1,209 @@
+.accueil-page {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: #f8fafc;
+}
+
+/* ── Header ── */
+.accueil-header {
+  display: flex;
+  align-items: center;
+  padding: 1rem 2.5rem;
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  text-decoration: none;
+}
+
+.brand-icon {
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.brand-name {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+}
+
+/* ── Hero ── */
+.hero {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3.5rem 2rem 2rem;
+}
+
+.hero-content {
+  text-align: center;
+  max-width: 620px;
+  margin-bottom: 3rem;
+}
+
+.hero-badge {
+  display: inline-block;
+  padding: 0.35rem 1rem;
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(124, 58, 237, 0.1));
+  color: #4f46e5;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: 20px;
+  margin-bottom: 1.25rem;
+}
+
+.hero-content h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.15;
+  margin: 0 0 1rem;
+}
+
+.highlight {
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-subtitle {
+  font-size: 1.05rem;
+  color: #64748b;
+  line-height: 1.65;
+  margin: 0;
+}
+
+/* ── Navigation Cards ── */
+.nav-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+  width: 100%;
+  max-width: 1100px;
+}
+
+.nav-card {
+  position: relative;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1.75rem 1.5rem 1.5rem;
+  text-decoration: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 4px 12px rgba(0, 0, 0, 0.03);
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: 1.5px solid #f1f5f9;
+  overflow: hidden;
+}
+
+.nav-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.card-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.nav-card h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0 0 0.35rem;
+  color: #1e293b;
+}
+
+.nav-card p {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.45;
+}
+
+.card-arrow {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  font-size: 1.25rem;
+  opacity: 0;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.nav-card:hover .card-arrow {
+  opacity: 1;
+  transform: translateX(3px);
+}
+
+/* Card color variants */
+.card-blue .card-icon { background: rgba(37, 99, 235, 0.1); color: #2563eb; }
+.card-blue:hover { border-color: rgba(37, 99, 235, 0.3); }
+.card-blue .card-arrow { color: #2563eb; }
+
+.card-red .card-icon { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+.card-red:hover { border-color: rgba(239, 68, 68, 0.3); }
+.card-red .card-arrow { color: #ef4444; }
+
+.card-amber .card-icon { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+.card-amber:hover { border-color: rgba(245, 158, 11, 0.3); }
+.card-amber .card-arrow { color: #f59e0b; }
+
+.card-green .card-icon { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+.card-green:hover { border-color: rgba(16, 185, 129, 0.3); }
+.card-green .card-arrow { color: #10b981; }
+
+.card-purple .card-icon { background: rgba(139, 92, 246, 0.1); color: #8b5cf6; }
+.card-purple:hover { border-color: rgba(139, 92, 246, 0.3); }
+.card-purple .card-arrow { color: #8b5cf6; }
+
+/* ── Footer ── */
+.accueil-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 1.25rem 2rem;
+  border-top: 1px solid #e2e8f0;
+  background: #ffffff;
+}
+
+.footer-brand {
+  font-weight: 700;
+  color: #2563eb;
+  font-size: 0.85rem;
+}
+
+.footer-sep { color: #cbd5e1; }
+
+.footer-text {
+  color: #64748b;
+  font-size: 0.82rem;
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .hero-content h1 { font-size: 1.85rem; }
+  .nav-cards { grid-template-columns: 1fr; }
+  .hero { padding: 2rem 1.25rem 1.5rem; }
+}

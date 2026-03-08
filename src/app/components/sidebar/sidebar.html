@@ -1,0 +1,83 @@
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2C8 2 5 7 5 13a7 7 0 0 0 14 0c0-6-3-11-7-11z"/>
+      </svg>
+    </div>
+    <span class="brand-text">Akoho</span>
+  </div>
+
+  <nav class="sidebar-nav">
+    <span class="nav-section">GESTION</span>
+
+    <a [routerLink]="'/inserer-lot'" routerLinkActive="active" class="nav-item">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 5v14M5 12h14"/>
+      </svg>
+      <span>Nouveau lot</span>
+    </a>
+
+    <a [routerLink]="'/inserer-mort'" routerLinkActive="active" class="nav-item">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 3l18 18"/>
+        <circle cx="12" cy="12" r="9" opacity="0.5"/>
+      </svg>
+      <span>Poules mortes</span>
+    </a>
+
+    <a [routerLink]="'/inserer-oeufs'" routerLinkActive="active" class="nav-item">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <ellipse cx="12" cy="14" rx="7" ry="9"/>
+      </svg>
+      <span>Oeufs récoltés</span>
+    </a>
+
+    <a [routerLink]="'/eclosion-oeufs'" routerLinkActive="active" class="nav-item">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2C8 2 5 7 5 13a7 7 0 0 0 14 0c0-6-3-11-7-11z"/>
+        <path d="M9 14l3-3 3 3"/>
+      </svg>
+      <span>Éclosion</span>
+    </a>
+
+    <span class="nav-section">RAPPORTS</span>
+
+    <a [routerLink]="'/situation'" routerLinkActive="active" class="nav-item">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 3v18h18"/>
+        <path d="M7 16l4-8 4 4 4-6"/>
+      </svg>
+      <span>Situation</span>
+    </a>
+
+    <span class="nav-section">LISTES</span>
+
+    <a [routerLink]="'/liste-lots'" routerLinkActive="active" class="nav-item">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>
+      </svg>
+      <span>Tous les lots</span>
+    </a>
+
+    <a [routerLink]="'/liste-morts'" routerLinkActive="active" class="nav-item">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 3l18 18"/>
+        <path d="M8 6h13M8 12h13M8 18h13"/>
+      </svg>
+      <span>Poules mortes</span>
+    </a>
+
+    <a [routerLink]="'/liste-oeufs'" routerLinkActive="active" class="nav-item">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <ellipse cx="12" cy="14" rx="7" ry="9"/>
+        <path d="M8 6h13M8 18h13"/>
+      </svg>
+      <span>Oeufs récoltés</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="version-badge">v1.0.0</div>
+  </div>
+</aside>

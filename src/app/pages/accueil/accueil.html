@@ -1,0 +1,126 @@
+<div class="accueil-page">
+  <!-- Header -->
+  <header class="accueil-header">
+    <a routerLink="/" class="header-brand">
+      <div class="brand-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2C8 2 5 7 5 13a7 7 0 0 0 14 0c0-6-3-11-7-11z"/>
+        </svg>
+      </div>
+      <span class="brand-name">Akoho</span>
+    </a>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-badge">Gestion d'élevage</div>
+      <h1>Bienvenue sur <span class="highlight">Akoho</span></h1>
+      <p class="hero-subtitle">
+        Votre plateforme de gestion d'élevage de poules. Suivez vos lots,
+        enregistrez les pertes, récoltez les oeufs et consultez vos résultats en un clic.
+      </p>
+    </div>
+
+    <!-- Navigation Cards -->
+    <div class="nav-cards">
+      <a routerLink="/inserer-lot" class="nav-card card-blue">
+        <div class="card-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 5v14M5 12h14"/>
+          </svg>
+        </div>
+        <h3>Nouveau lot</h3>
+        <p>Enregistrer un nouveau lot de poules</p>
+        <span class="card-arrow">&rarr;</span>
+      </a>
+
+      <a routerLink="/inserer-mort" class="nav-card card-red">
+        <div class="card-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 3l18 18"/>
+            <circle cx="12" cy="12" r="9" opacity="0.5"/>
+          </svg>
+        </div>
+        <h3>Poules mortes</h3>
+        <p>Déclarer les pertes de poules</p>
+        <span class="card-arrow">&rarr;</span>
+      </a>
+
+      <a routerLink="/inserer-oeufs" class="nav-card card-amber">
+        <div class="card-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <ellipse cx="12" cy="14" rx="7" ry="9"/>
+          </svg>
+        </div>
+        <h3>Oeufs récoltés</h3>
+        <p>Enregistrer la récolte d'oeufs</p>
+        <span class="card-arrow">&rarr;</span>
+      </a>
+
+      <a routerLink="/eclosion-oeufs" class="nav-card card-green">
+        <div class="card-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2C8 2 5 7 5 13a7 7 0 0 0 14 0c0-6-3-11-7-11z"/>
+            <path d="M9 14l3-3 3 3"/>
+          </svg>
+        </div>
+        <h3>Éclosion</h3>
+        <p>Enregistrer les oeufs éclos</p>
+        <span class="card-arrow">&rarr;</span>
+      </a>
+
+      <a routerLink="/situation" class="nav-card card-purple">
+        <div class="card-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 3v18h18"/>
+            <path d="M7 16l4-8 4 4 4-6"/>
+          </svg>
+        </div>
+        <h3>Situation</h3>
+        <p>Voir l'état général de vos lots</p>
+        <span class="card-arrow">&rarr;</span>
+      </a>
+
+      <a routerLink="/liste-lots" class="nav-card card-blue">
+        <div class="card-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>
+          </svg>
+        </div>
+        <h3>Liste des lots</h3>
+        <p>Voir tous les lots enregistrés</p>
+        <span class="card-arrow">&rarr;</span>
+      </a>
+
+      <a routerLink="/liste-morts" class="nav-card card-red">
+        <div class="card-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>
+          </svg>
+        </div>
+        <h3>Liste poules mortes</h3>
+        <p>Historique des pertes par lot</p>
+        <span class="card-arrow">&rarr;</span>
+      </a>
+
+      <a routerLink="/liste-oeufs" class="nav-card card-amber">
+        <div class="card-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>
+          </svg>
+        </div>
+        <h3>Liste oeufs récoltés</h3>
+        <p>Historique des récoltes par lot</p>
+        <span class="card-arrow">&rarr;</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="accueil-footer">
+    <span class="footer-brand">Akoho</span>
+    <span class="footer-sep">|</span>
+    <span class="footer-text">Gestion d'élevage de poules &copy; 2026</span>
+  </footer>
+</div>

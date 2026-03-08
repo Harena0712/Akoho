@@ -1,0 +1,13 @@
+@if (isHome()) {
+  <router-outlet />
+} @else {
+  <div class="app-layout">
+    <app-sidebar></app-sidebar>
+    <div class="main-area">
+      <div class="main-content">
+        <router-outlet />
+      </div>
+      <app-footer></app-footer>
+    </div>
+  </div>
+}

@@ -1,0 +1,10 @@
+{
+  "routes": {
+    "/": {},
+    "/eclosion-oeufs": {},
+    "/inserer-lot": {},
+    "/inserer-mort": {},
+    "/inserer-oeufs": {},
+    "/situation": {}
+  }
+}

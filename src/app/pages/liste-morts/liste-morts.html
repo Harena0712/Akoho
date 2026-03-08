@@ -1,0 +1,35 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1>Poules mortes</h1>
+    <p class="subtitle">Historique des poules mortes par lot</p>
+  </div>
+
+  @if (morts.length > 0) {
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Lot</th>
+            <th>Race</th>
+            <th>Nb mortes</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (m of morts; track m.id) {
+            <tr>
+              <td class="id-cell">{{ m.id }}</td>
+              <td>LOT-{{ m.idLot }}</td>
+              <td>{{ m.race }}</td>
+              <td class="mort-cell">{{ m.nbMaty }}</td>
+              <td>{{ m.date | date:'dd/MM/yyyy' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  } @else {
+    <div class="empty-state">Aucune poule morte enregistrée</div>
+  }
+</div>

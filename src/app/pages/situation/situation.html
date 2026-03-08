@@ -1,0 +1,72 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1>Situation des lots</h1>
+    <p class="subtitle">Consultez l'état actuel de vos lots de poules</p>
+  </div>
+
+  <div class="filter-bar">
+    <div class="filter-group">
+      <label for="dateFilter">Date</label>
+      <input type="date" id="dateFilter" [(ngModel)]="dateFilter" name="dateFilter">
+    </div>
+    <button class="btn-filter" (click)="voirSituation()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+      </svg>
+      Voir la situation
+    </button>
+  </div>
+
+  @if (filtered) {
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Lot</th>
+            <th>Nb poule restant</th>
+            <th>Achat</th>
+            <th>Prix nourriture</th>
+            <th>Nb poule mort</th>
+            <th>Poids moy.</th>
+            <th>Prix lot</th>
+            <th>Nb atody</th>
+            <th>Valeur atody</th>
+            <th>Bénéfice</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of data; track row.lotId) {
+            <tr>
+              <td class="lot-cell">{{ row.lot }}</td>
+              <td>{{ row.nb }}</td>
+              <td>{{ row.achat | number }} Ar</td>
+              <td>{{ row.prixSakafo | number }} Ar</td>
+              <td class="mort-cell">{{ row.maty }}</td>
+              <td>{{ row.poidsMoyenne }} kg</td>
+              <td>{{ row.prixLot | number }} Ar</td>
+              <td>{{ row.nbAtody }}</td>
+              <td>{{ row.valeurAtody | number }} Ar</td>
+              <td>
+                <span class="benefice-badge" [style.background]="row.benefice >= 0 ? '#ecfdf5' : '#fef2f2'" [style.color]="row.benefice >= 0 ? '#059669' : '#dc2626'" [style.border-color]="row.benefice >= 0 ? '#a7f3d0' : '#fecaca'">
+                  @if (row.benefice >= 0) { ▲ } @else { ▼ }
+                  {{ row.benefice | number }} Ar
+                </span>
+              </td>
+            </tr>
+          }
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="9" class="total-label">Total Bénéfice</td>
+            <td>
+              <span class="benefice-badge" [style.background]="totalBenefice >= 0 ? '#ecfdf5' : '#fef2f2'" [style.color]="totalBenefice >= 0 ? '#059669' : '#dc2626'" [style.border-color]="totalBenefice >= 0 ? '#a7f3d0' : '#fecaca'">
+                @if (totalBenefice >= 0) { ▲ } @else { ▼ }
+                {{ totalBenefice | number }} Ar
+              </span>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  }
+</div>

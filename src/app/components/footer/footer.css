@@ -1,0 +1,28 @@
+.app-footer {
+  background: #ffffff;
+  border-top: 1px solid #e2e8f0;
+  padding: 1rem 2rem;
+  margin-top: auto;
+}
+
+.footer-content {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  justify-content: center;
+}
+
+.footer-brand {
+  font-weight: 700;
+  color: #2563eb;
+  font-size: 0.85rem;
+}
+
+.footer-separator {
+  color: #cbd5e1;
+}
+
+.footer-text {
+  color: #64748b;
+  font-size: 0.82rem;
+}
