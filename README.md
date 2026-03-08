@@ -1,59 +1,154 @@
-# Akoho
+# Akoho — Gestion d'élevage de poules
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.1.
+Application Angular + Express + SQL Server (Docker).
 
-## Development server
+---
 
-To start a local development server, run:
+## Prérequis
 
+- **Node.js** (v18+) et **npm**
+- **Docker** installé et votre utilisateur dans le groupe `docker` :
+  ```bash
+  sudo usermod -aG docker $USER
+  ```
+  Puis **déconnectez-vous et reconnectez-vous** pour appliquer. Après ça, plus besoin de `sudo` pour les commandes Docker.
+- **sqlcmd** (outil CLI SQL Server) — installé avec `mssql-tools`
+- **Angular CLI** :
+  ```bash
+  npm install -g @angular/cli
+  ```
+
+---
+
+## Lancement du projet (étape par étape)
+
+### Étape 1 — Démarrer le conteneur SQL Server
+
+```bash
+docker start sqlserver
+```
+
+> **Première fois ?** Si le conteneur n'existe pas encore, créez-le :
+> ```bash
+> docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=Harena0712" \
+>   -p 1433:1433 --name sqlserver \
+>   -d mcr.microsoft.com/mssql/server:2022-latest
+> ```
+
+Vérifiez qu'il tourne :
+```bash
+docker ps
+```
+Vous devez voir `sqlserver` avec le statut **Up**.
+
+### Étape 2 — Créer / initialiser la base de données
+
+Connectez-vous à SQL Server :
+```bash
+sqlcmd -S localhost -U sa -P Harena0712
+```
+
+Puis exécutez les scripts SQL (depuis un autre terminal) :
+```bash
+# Créer les tables
+sqlcmd -S localhost -U sa -P Harena0712 -i backend/database/base.sql
+
+# Insérer les données de base
+sqlcmd -S localhost -U sa -P Harena0712 -d AkohoDB -i backend/database/data.sql
+```
+
+> Cette étape n'est nécessaire que la **première fois** ou après un reset.
+
+### Étape 3 — Installer les dépendances
+
+```bash
+# Dépendances frontend (Angular)
+npm install
+
+# Dépendances backend (Express)
+cd backend
+npm install
+cd ..
+```
+
+### Étape 4 — Démarrer le backend (API Express)
+
+```bash
+cd backend
+npm start
+```
+
+Le serveur API démarre sur **http://localhost:3000**. Vérifiez :
+```bash
+curl http://localhost:3000/api/health
+# → {"status":"OK","message":"Akoho API is running"}
+```
+
+### Étape 5 — Démarrer le frontend (Angular)
+
+Dans un **autre terminal** :
 ```bash
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+L'application est accessible sur **http://localhost:4200**.
 
-## Code scaffolding
+---
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Résumé rapide (après la première installation)
 
 ```bash
-ng generate --help
+# 1. Démarrer la base de données
+docker start sqlserver
+
+# 2. Démarrer le backend (terminal 1)
+cd backend && npm start
+
+# 3. Démarrer le frontend (terminal 2)
+ng serve
 ```
 
-## Building
+Ouvrir **http://localhost:4200** dans le navigateur.
 
-To build the project run:
+---
+
+## Arrêter le projet
 
 ```bash
-ng build
+# Arrêter le conteneur SQL Server
+docker stop sqlserver
+
+# Les serveurs backend et frontend : Ctrl+C dans leurs terminaux
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+---
 
-## Running unit tests
+## Dépannage
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+| Problème | Solution |
+|---|---|
+| `permission denied ... docker.sock` | Ajouter votre user au groupe docker : `sudo usermod -aG docker $USER` puis se reconnecter |
+| Erreurs CORS dans le navigateur avec code d'état `(null)` | Le backend n'est pas démarré → lancer `cd backend && npm start` |
+| `docker start` requires at least 1 argument | Spécifier le nom du conteneur : `docker start sqlserver` |
+| Connexion refusée à SQL Server | Vérifier que le conteneur tourne : `docker ps` |
+| `Cannot find module ...` dans le backend | Lancer `cd backend && npm install` |
 
-```bash
-ng test
+---
+
+## Structure du projet
+
 ```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
+Akoho/
+├── src/                  # Frontend Angular
+│   ├── app/
+│   │   ├── pages/        # Pages de l'application
+│   │   ├── components/   # Composants réutilisables
+│   │   └── services/     # Services API
+├── backend/              # API Express
+│   ├── server.js         # Point d'entrée
+│   ├── config/db.js      # Configuration SQL Server
+│   ├── database/         # Scripts SQL (base.sql, data.sql)
+│   ├── controllers/      # Logique métier
+│   ├── models/           # Requêtes SQL
+│   └── routes/           # Routes API
 ```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
