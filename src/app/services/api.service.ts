@@ -12,7 +12,7 @@ export class ApiService {
 
   // Lot
   getLots() { return this.http.get<any[]>(`${BASE}/lot`); }
-  createLot(data: { idRace: number; nb: number; age: number; date: string }) {
+  createLot(data: { idRace: number; nb: number; age: number; date: string; PU: number }) {
     return this.http.post<any>(`${BASE}/lot`, data);
   }
 

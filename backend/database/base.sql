@@ -35,7 +35,7 @@ BEGIN
         nb          INT NOT NULL,          -- nombre de poules
         age         INT NOT NULL,          -- age en semaines
         date        DATE NOT NULL,
-        idLotAtody  INT NULL,              -- NULL = acheté, NOT NULL = issu d'éclosion
+        PU          FLOAT NOT NULL DEFAULT 0,  -- prix unitaire d'achat (0 = issu d'éclosion)
         FOREIGN KEY (idRace) REFERENCES race(id)
     );
 END

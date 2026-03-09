@@ -46,13 +46,13 @@ const incubationController = {
       // Récupérer le lot parent pour connaître la race
       const lotParent = await Lot.getById(lotAtody.idLot);
 
-      // Créer un nouveau lot pour les poussins éclos (age = 0)
+      // Créer un nouveau lot pour les poussins éclos (age = 0, PU = 0 car issu d'éclosion)
       const nouveauLot = await Lot.create({
         idRace: lotParent.idRace,
         nb: nbAtodyF,
         age: 0,
         date: date,
-        idLotAtody: idLotAtody
+        PU: 0
       });
 
       res.status(201).json({

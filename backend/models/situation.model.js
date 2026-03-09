@@ -184,12 +184,11 @@ function poidsMoyenne(lot, listConfSakafo, date) {
 }
 
 /**
- * Prix d'achat initial = nb * poids à l'achat * pvGg
- * Poids à l'achat = somme de variationPoid de semaine 0 à lot.age
+ * Prix d'achat initial = nb * PU
+ * Si PU = 0, le lot est issu d'éclosion (pas d'achat)
  */
-function achatLotInit(lot, race, listConfSakafo) {
-  const poidsInit = totalPoidsParPoule(lot.idRace, lot.age, listConfSakafo);
-  return Math.round(lot.nb * poidsInit * race.pvGg * 100) / 100;
+function achatLotInit(lot) {
+  return Math.round(lot.nb * lot.PU * 100) / 100;
 }
 
 /**
@@ -266,8 +265,7 @@ const Situation = {
       const race = listRace.find(r => r.id === lot.idRace);
       const nbReste = nbAkohoReste(lot, listLotMaty, date);
       const maty = nbAkohoMaty(lot, listLotMaty, date);
-      // Lots issus d'éclosion (idLotAtody != null) → pas d'achat
-      const achat = lot.idLotAtody != null ? 0 : achatLotInit(lot, race, listConfSakafo);
+      const achat = achatLotInit(lot);
       const sakafo = prixSakafo(lot, race, listLotMaty, listConfSakafo, date);
       const poids = poidsMoyenne(lot, listConfSakafo, date);
       const prix = prixLot(lot, race, listLotMaty, listConfSakafo, date);

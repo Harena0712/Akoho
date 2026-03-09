@@ -105,13 +105,13 @@ GO
 -- ====================================
 IF NOT EXISTS (SELECT 1 FROM lot)
 BEGIN
-    INSERT INTO lot (idRace, nb, age, date, idLotAtody) VALUES
-    (1, 100, 2, '2026-02-01', NULL),   -- id=1 Rhode Island Red, acheté
-    (2, 150, 3, '2026-01-25', NULL),   -- id=2 Sussex, acheté
-    (3,  80, 1, '2026-02-15', NULL),   -- id=3 Leghorn, acheté
-    (4, 200, 4, '2026-01-15', NULL),   -- id=4 Plymouth Rock, acheté
-    (5, 120, 5, '2026-01-10', NULL),   -- id=5 Gasy, acheté
-    (4,  30, 0, '2026-03-01', 4);      -- id=6 Plymouth Rock, éclosion du lotAtody#4
+    INSERT INTO lot (idRace, nb, age, date, PU) VALUES
+    (1, 100, 2, '2026-02-01', 760),    -- id=1 Rhode Island Red, acheté (PU > 0)
+    (2, 150, 3, '2026-01-25', 630),    -- id=2 Sussex, acheté
+    (3,  80, 1, '2026-02-15', 360),    -- id=3 Leghorn, acheté
+    (4, 200, 4, '2026-01-15', 836),    -- id=4 Plymouth Rock, acheté
+    (5, 120, 5, '2026-01-10', 395),    -- id=5 Gasy, acheté
+    (4,  30, 0, '2026-03-01', 0);      -- id=6 Plymouth Rock, éclosion (PU = 0)
 END
 GO
 

@@ -17,6 +17,7 @@ export class InsererLotComponent {
   idRace: number | null = null;
   nombre: number | null = null;
   age: number | null = null;
+  PU: number | null = null;
   date = '';
   message = '';
   error = '';
@@ -34,15 +35,16 @@ export class InsererLotComponent {
   }
 
   onSubmit() {
-    if (!this.idRace || !this.nombre || this.age == null || !this.date) return;
+    if (!this.idRace || !this.nombre || this.age == null || this.PU == null || !this.date) return;
     this.message = '';
     this.error = '';
-    this.api.createLot({ idRace: this.idRace, nb: this.nombre, age: this.age, date: this.date }).subscribe({
+    this.api.createLot({ idRace: this.idRace, nb: this.nombre, age: this.age, date: this.date, PU: this.PU }).subscribe({
       next: () => {
         this.message = 'Lot enregistré avec succès !';
         this.idRace = null;
         this.nombre = null;
         this.age = null;
+        this.PU = null;
         this.date = '';
       },
       error: (err) => this.error = err.error?.error || 'Erreur lors de l\'enregistrement'

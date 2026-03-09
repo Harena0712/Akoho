@@ -20,15 +20,15 @@ const Lot = {
     return result.recordset[0];
   },
 
-  async create({ idRace, nb, age, date, idLotAtody = null }) {
+  async create({ idRace, nb, age, date, PU = 0 }) {
     const pool = await getPool();
     const result = await pool.request()
       .input('idRace', sql.Int, idRace)
       .input('nb', sql.Int, nb)
       .input('age', sql.Int, age)
       .input('date', sql.Date, date)
-      .input('idLotAtody', sql.Int, idLotAtody)
-      .query('INSERT INTO lot (idRace, nb, age, date, idLotAtody) OUTPUT INSERTED.* VALUES (@idRace, @nb, @age, @date, @idLotAtody)');
+      .input('PU', sql.Float, PU)
+      .query('INSERT INTO lot (idRace, nb, age, date, PU) OUTPUT INSERTED.* VALUES (@idRace, @nb, @age, @date, @PU)');
     return result.recordset[0];
   },
 

@@ -1,6 +1,6 @@
 Akoho
     - Table:
-        . lot: id, idRace, nb, age, date
+        . lot: id, idRace, nb, age, date, PU
         . lotMaty: id, idLot,nbMaty, date
         . lotAtody: id, idLot, nbAtody, date
         . race: id, libelle, puGg, pvGg, prixAtody
@@ -8,7 +8,7 @@ Akoho
         . incubation: id, idLot, nbAtodyF, date
 
     - Model:
-        . Lot: id, idRace, nb, age, date
+        . Lot: id, idRace, nb, age, date, PU
         . lotMaty: id, idLot,nbMaty, date
         . LotAtody: id, idLot, nbAtody, date
         . Race: id, libelle, puGg, pvGg, prixAtody
@@ -25,10 +25,9 @@ Akoho
         . nbAkohoMaty(lot, listLotMaty, date)
             → maty = SUM(lotMaty.nbMaty)  où lotMaty.idLot = lot.id ET lotMaty.date <= date
 
-        . achatLotInit(lot, race, listConfSakafo)
-            → poidsInit = SUM(confSakafo.variationPoid)  de semaine 0 à semaine lot.age (pour la race du lot)
-            → achat = lot.nb × poidsInit × race.pvGg
-            → Si lot issu d'éclosion (idLotAtody != null) → achat = 0
+        . achatLotInit(lot)
+            → achat = lot.nb × lot.PU
+            → Si PU = 0 → lot issu d'éclosion, achat = 0
 
         . prixSakafo(lot, race, listLotMaty, listConfSakafo, date)
             → totalSakafoParPoule = somme semaine par semaine de confSakafo.sakafoG

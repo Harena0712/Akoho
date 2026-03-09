@@ -99,13 +99,13 @@ INSERT INTO confSakafo (age, idRace, variationPoid, sakafoG) VALUES
 GO
 
 -- Données de test : lot
-INSERT INTO lot (idRace, nb, age, date, idLotAtody) VALUES
-(1, 100, 2, '2026-02-01', NULL),
-(2, 150, 3, '2026-01-25', NULL),
-(3,  80, 1, '2026-02-15', NULL),
-(4, 200, 4, '2026-01-15', NULL),
-(5, 120, 5, '2026-01-10', NULL),
-(4,  30, 0, '2026-03-01', 4);
+INSERT INTO lot (idRace, nb, age, date, PU) VALUES
+(1, 100, 2, '2026-02-01', 760),
+(2, 150, 3, '2026-01-25', 630),
+(3,  80, 1, '2026-02-15', 360),
+(4, 200, 4, '2026-01-15', 836),
+(5, 120, 5, '2026-01-10', 395),
+(4,  30, 0, '2026-03-01', 0);
 GO
 
 -- Données de test : lotMaty
