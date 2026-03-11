@@ -9,6 +9,18 @@ export class ApiService {
 
   // Race
   getRaces() { return this.http.get<any[]>(`${BASE}/race`); }
+  createRace(data: { libelle: string; puGg: number; pvGg: number; prixAtody: number }) {
+    return this.http.post<any>(`${BASE}/race`, data);
+  }
+
+  // Configuration sakafo
+  getConfSakafo() { return this.http.get<any[]>(`${BASE}/conf-sakafo`); }
+  getPoidsAkoho(race: number, dateDebut: string, dateFin: string) {
+    return this.http.get<any>(`${BASE}/conf-sakafo/poids-akoho?race=${race}&dateDebut=${dateDebut}&dateFin=${dateFin}`);
+  }
+  createConfSakafo(data: { age: number; idRace: number; variationPoid: number; sakafoG: number }) {
+    return this.http.post<any>(`${BASE}/conf-sakafo`, data);
+  }
 
   // Lot
   getLots() { return this.http.get<any[]>(`${BASE}/lot`); }

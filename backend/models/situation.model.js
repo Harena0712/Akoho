@@ -1,5 +1,86 @@
 const { getPool, sql } = require('../config/db');
 
+const DAY_MS = 1000 * 60 * 60 * 24;
+
+function toDate(value) {
+  return value instanceof Date ? value : new Date(value);
+}
+
+function buildRaceMap(listRace) {
+  return new Map(listRace.map(race => [race.id, race]));
+}
+
+function buildSumByLot(list, date, valueKey) {
+  const targetDate = toDate(date);
+  const sums = new Map();
+
+  for (const item of list) {
+    if (toDate(item.date) > targetDate) continue;
+    sums.set(item.idLot, (sums.get(item.idLot) || 0) + item[valueKey]);
+  }
+
+  return sums;
+}
+
+function buildConfLookup(listConfSakafo, maxWeek) {
+  const grouped = new Map();
+
+  for (const conf of listConfSakafo) {
+    if (!grouped.has(conf.idRace)) {
+      grouped.set(conf.idRace, []);
+    }
+    grouped.get(conf.idRace).push(conf);
+  }
+
+  const byRace = new Map();
+
+  for (const [idRace, confs] of grouped.entries()) {
+    const ordered = confs.slice().sort((a, b) => a.age - b.age);
+    const lastAge = ordered.length > 0 ? ordered[ordered.length - 1].age : 0;
+    const lookupMaxWeek = Math.max(maxWeek, lastAge + 1);
+    const byWeek = new Array(lookupMaxWeek + 1).fill(null);
+    const prefixVariation = new Array(lookupMaxWeek + 1).fill(0);
+    const prefixSakafo = new Array(lookupMaxWeek + 1).fill(0);
+
+    let confIndex = 0;
+    let currentConf = null;
+
+    for (let week = 0; week <= lookupMaxWeek; week++) {
+      while (confIndex < ordered.length && ordered[confIndex].age <= week) {
+        currentConf = ordered[confIndex];
+        confIndex++;
+      }
+
+      byWeek[week] = currentConf;
+      const variation = currentConf ? currentConf.variationPoid : 0;
+      const sakafo = currentConf ? currentConf.sakafoG : 0;
+
+      prefixVariation[week] = variation + (week > 0 ? prefixVariation[week - 1] : 0);
+      prefixSakafo[week] = sakafo + (week > 0 ? prefixSakafo[week - 1] : 0);
+    }
+
+    byRace.set(idRace, { byWeek, prefixVariation, prefixSakafo });
+  }
+
+  return { byRace, maxWeek };
+}
+
+function getLookupEntry(idRace, confLookup) {
+  return confLookup && confLookup.byRace ? confLookup.byRace.get(idRace) : null;
+}
+
+function getCumulativeValue(prefixValues, week) {
+  if (!prefixValues || prefixValues.length === 0 || week < 0) return 0;
+  const boundedWeek = Math.min(week, prefixValues.length - 1);
+  return prefixValues[boundedWeek] || 0;
+}
+
+function getConfForWeekFromLookup(idRace, semaine, confLookup) {
+  const entry = getLookupEntry(idRace, confLookup);
+  if (!entry || entry.byWeek.length === 0 || semaine < 0) return null;
+  return entry.byWeek[Math.min(semaine, entry.byWeek.length - 1)] || null;
+}
+
 // ── Fonctions utilitaires de calcul ──
 
 /**
@@ -28,9 +109,9 @@ function nbAkohoMaty(lot, listLotMaty, date) {
  * Nombre de jours écoulés depuis l'enregistrement du lot
  */
 function joursEcoules(lot, date) {
-  const d1 = new Date(lot.date);
-  const d2 = new Date(date);
-  return Math.floor((d2 - d1) / (1000 * 60 * 60 * 24));
+  const d1 = toDate(lot.date);
+  const d2 = toDate(date);
+  return Math.floor((d2 - d1) / DAY_MS);
 }
 
 /**
@@ -63,25 +144,54 @@ function getConfSakafo(lot, listConfSakafo, date) {
  * Trouve la confSakafo pour une semaine donnée d'une race
  */
 function getConfSakafoForWeek(idRace, semaine, listConfSakafo) {
-  const matching = listConfSakafo
-    .filter(c => c.idRace === idRace && c.age <= semaine)
-    .sort((a, b) => b.age - a.age);
-  return matching.length > 0 ? matching[0] : null;
+  if (listConfSakafo && listConfSakafo.byRace) {
+    return getConfForWeekFromLookup(idRace, semaine, listConfSakafo);
+  }
+
+  let best = null;
+  for (const conf of listConfSakafo) {
+    if (conf.idRace === idRace && conf.age <= semaine && (!best || conf.age > best.age)) {
+      best = conf;
+    }
+  }
+  return best;
 }
 
 /**
  * Calcul précis de la nourriture totale par poule depuis l'arrivée dans le lot.
- * On somme semaine par semaine (sakafoG = grammes par semaine) :
- *   - Chaque semaine complète : sakafoG de cette semaine
- *   - Jours restants (semaine partielle) : jours * (sakafoG de cette semaine / 7)
+ * La ration consommée pendant une semaine d'age Sx est celle configurée pour Sx+1.
+ * Ex: un lot arrive a S0, pendant ses 7 premiers jours sur place il consomme la ration S1.
+ * Les semaines partielles sont calculees au prorata: jours * (sakafoG semaine suivante / 7).
  */
 function totalSakafoParPoule(lot, listConfSakafo, date) {
   const jours = joursEcoules(lot, date);
   if (jours <= 0) return 0;
 
+  if (listConfSakafo && listConfSakafo.byRace) {
+    const entry = getLookupEntry(lot.idRace, listConfSakafo);
+    const semainesCompletes = Math.floor(jours / 7);
+    const joursPartiels = jours % 7;
+    const semaineDepart = lot.age + 1;
+    const semaineFin = semaineDepart + semainesCompletes - 1;
+
+    let total = 0;
+    if (semainesCompletes > 0) {
+      const totalFin = getCumulativeValue(entry?.prefixSakafo, semaineFin);
+      const totalAvant = getCumulativeValue(entry?.prefixSakafo, semaineDepart - 1);
+      total += totalFin - totalAvant;
+    }
+
+    if (joursPartiels > 0) {
+      const conf = getConfSakafoForWeek(lot.idRace, semaineDepart + semainesCompletes, listConfSakafo);
+      total += joursPartiels * ((conf ? conf.sakafoG : 0) / 7);
+    }
+
+    return total;
+  }
+
   let total = 0;
   let joursRestants = jours;
-  let semaine = lot.age; // semaine de départ
+  let semaine = lot.age + 1;
 
   while (joursRestants > 0) {
     const conf = getConfSakafoForWeek(lot.idRace, semaine, listConfSakafo);
@@ -99,7 +209,8 @@ function totalSakafoParPoule(lot, listConfSakafo, date) {
     semaine++;
   }
 
-  return Math.round(total * 100) / 100;
+  // return Math.round(total * 100) / 100;
+  return total;
 }
 
 /**
@@ -115,6 +226,17 @@ function totalPoidsParPoule(idRace, ageSemaines, listConfSakafo) {
   const semainesCompletes = Math.floor(ageSemaines);
   const fraction = ageSemaines - semainesCompletes;
 
+  if (listConfSakafo && listConfSakafo.byRace) {
+    let total = getCumulativeValue(getLookupEntry(idRace, listConfSakafo)?.prefixVariation, semainesCompletes);
+
+    if (fraction > 0) {
+      const conf = getConfSakafoForWeek(idRace, semainesCompletes + 1, listConfSakafo);
+      total += conf ? conf.variationPoid * fraction : 0;
+    }
+
+    return Math.round(total * 100) / 100;
+  }
+
   let total = 0;
   for (let s = 0; s <= semainesCompletes; s++) {
     const conf = getConfSakafoForWeek(idRace, s, listConfSakafo);
@@ -128,6 +250,7 @@ function totalPoidsParPoule(idRace, ageSemaines, listConfSakafo) {
   }
 
   return Math.round(total * 100) / 100;
+  // return total;
 }
 
 /**
@@ -164,6 +287,25 @@ function poidsMoyenne(lot, listConfSakafo, date) {
   let sumPoids = 0;
   let count = 0;
 
+  if (listConfSakafo && listConfSakafo.byRace) {
+    const entry = getLookupEntry(lot.idRace, listConfSakafo);
+
+    for (let s = 0; s <= semainesCompletes; s++) {
+      const cumul = getCumulativeValue(entry?.prefixVariation, s);
+      sumPoids += cumul;
+      count++;
+    }
+
+    if (fraction > 0) {
+      const poidsBase = getCumulativeValue(entry?.prefixVariation, semainesCompletes);
+      const conf = getConfSakafoForWeek(lot.idRace, semainesCompletes + 1, listConfSakafo);
+      sumPoids += poidsBase + (conf ? conf.variationPoid * fraction : 0);
+      count++;
+    }
+
+    return Math.round((sumPoids / count) * 100) / 100;
+  }
+
   // Poids réel à chaque semaine complète (S0, S1, ... Sn)
   for (let s = 0; s <= semainesCompletes; s++) {
     const conf = getConfSakafoForWeek(lot.idRace, s, listConfSakafo);
@@ -181,6 +323,7 @@ function poidsMoyenne(lot, listConfSakafo, date) {
   }
 
   return Math.round((sumPoids / count) * 100) / 100;
+  // return sumPoids / count;
 }
 
 /**
@@ -188,7 +331,8 @@ function poidsMoyenne(lot, listConfSakafo, date) {
  * Si PU = 0, le lot est issu d'éclosion (pas d'achat)
  */
 function achatLotInit(lot) {
-  return Math.round(lot.nb * lot.PU * 100) / 100;
+  // return Math.round(lot.nb * lot.PU * 100) / 100;
+  return lot.nb * lot.PU;
 }
 
 /**
@@ -198,9 +342,10 @@ function achatLotInit(lot) {
  */
 function prixSakafo(lot, race, listLotMaty, listConfSakafo, date) {
   const maty = nbAkohoMaty(lot, listLotMaty, date);
-  const nbMoyen = lot.nb - maty / 2;
+  const nbMoyen = (lot.nb - maty) / 2;
   const totalSakafo = totalSakafoParPoule(lot, listConfSakafo, date);
   return Math.round(nbMoyen * totalSakafo * race.puGg * 100) / 100;
+  return nbMoyen * totalSakafo * race.puGg
 }
 
 /**
@@ -210,7 +355,8 @@ function prixSakafo(lot, race, listLotMaty, listConfSakafo, date) {
 function prixLot(lot, race, listLotMaty, listConfSakafo, date) {
   const nb = nbAkohoReste(lot, listLotMaty, date);
   const poids = poidsActuel(lot, listConfSakafo, date);
-  return Math.round(nb * poids * race.pvGg * 100) / 100;
+  // return Math.round(nb * poids * race.pvGg * 100) / 100;
+  return nb * poids * race.pvGg;
 }
 
 /**
@@ -227,14 +373,17 @@ function nbAtody(lot, listLotAtody, date) {
  * Valeur des oeufs = nbAtody * prixAtody
  */
 function valeurAtody(lot, race, listLotAtody, date) {
-  return Math.round(nbAtody(lot, listLotAtody, date) * race.prixAtody * 100) / 100;
+  // return Math.round(nbAtody(lot, listLotAtody, date) * race.prixAtody * 100) / 100;
+  return nbAtody(lot, listLotAtody, date) * race.prixAtody;
+
 }
 
 /**
  * Bénéfice = prixLot + valeurAtody - achat - prixSakafo
  */
 function benefice(prixLotVal, valeurAtodyVal, achatVal, prixSakafoVal) {
-  return Math.round((prixLotVal + valeurAtodyVal - achatVal - prixSakafoVal) * 100) / 100;
+  // return Math.round((prixLotVal + valeurAtodyVal - achatVal - prixSakafoVal) * 100) / 100;
+  return prixLotVal + valeurAtodyVal - achatVal - prixSakafoVal;
 }
 
 // ── Modèle Situation ──
@@ -245,6 +394,7 @@ const Situation = {
    */
   async getByDate(date) {
     const pool = await getPool();
+    const targetDate = toDate(date);
 
     // Récupérer toutes les données nécessaires
     const [lotsRes, racesRes, lotMatyRes, lotAtodyRes, confSakafoRes] = await Promise.all([
@@ -259,18 +409,31 @@ const Situation = {
     const listLotMaty = lotMatyRes.recordset;
     const listLotAtody = lotAtodyRes.recordset;
     const listConfSakafo = confSakafoRes.recordset;
+    const lots = lotsRes.recordset;
+
+    const raceMap = buildRaceMap(listRace);
+    const matyByLot = buildSumByLot(listLotMaty, targetDate, 'nbMaty');
+    const atodyByLot = buildSumByLot(listLotAtody, targetDate, 'nbAtody');
+    const maxWeek = lots.reduce((max, lot) => {
+      const jours = Math.floor((targetDate - toDate(lot.date)) / DAY_MS);
+      const ageSemaines = lot.age + (jours / 7);
+      return Math.max(max, Math.floor(ageSemaines) + 1);
+    }, 0);
+    const confLookup = buildConfLookup(listConfSakafo, maxWeek);
 
     // Calculer la situation pour chaque lot
-    return lotsRes.recordset.map(lot => {
-      const race = listRace.find(r => r.id === lot.idRace);
-      const nbReste = nbAkohoReste(lot, listLotMaty, date);
-      const maty = nbAkohoMaty(lot, listLotMaty, date);
+    return lots.map(lot => {
+      const race = raceMap.get(lot.idRace);
+      const maty = matyByLot.get(lot.id) || 0;
+      const nbReste = lot.nb - maty;
       const achat = achatLotInit(lot);
-      const sakafo = prixSakafo(lot, race, listLotMaty, listConfSakafo, date);
-      const poids = poidsMoyenne(lot, listConfSakafo, date);
-      const prix = prixLot(lot, race, listLotMaty, listConfSakafo, date);
-      const oeufs = nbAtody(lot, listLotAtody, date);
-      const vAtody = valeurAtody(lot, race, listLotAtody, date);
+      const totalSakafo = totalSakafoParPoule(lot, confLookup, date);
+      const sakafo = Math.round((((lot.nb - maty) / 2) * totalSakafo * (race ? race.puGg : 0)) * 100) / 100;
+      const poids = poidsMoyenne(lot, confLookup, date);
+      const poidsReel = poidsActuel(lot, confLookup, date);
+      const prix = nbReste * poidsReel * (race ? race.pvGg : 0);
+      const oeufs = atodyByLot.get(lot.id) || 0;
+      const vAtody = oeufs * (race ? race.prixAtody : 0);
       const benef = benefice(prix, vAtody, achat, sakafo);
 
       return {

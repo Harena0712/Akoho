@@ -2,6 +2,8 @@ import { Routes } from '@angular/router';
 
 export const routes: Routes = [
   { path: '', loadComponent: () => import('./pages/accueil/accueil').then(m => m.AccueilComponent) },
+  { path: 'configuration', loadComponent: () => import('./pages/configuration/configuration').then(m => m.ConfigurationComponent) },
+  { path: 'poids-akoho', loadComponent: () => import('./pages/poids-akoho/poids-akoho').then(m => m.PoidsAkohoComponent) },
   { path: 'inserer-lot', loadComponent: () => import('./pages/inserer-lot/inserer-lot').then(m => m.InsererLotComponent) },
   { path: 'inserer-mort', loadComponent: () => import('./pages/inserer-mort/inserer-mort').then(m => m.InsererMortComponent) },
   { path: 'inserer-oeufs', loadComponent: () => import('./pages/inserer-oeufs/inserer-oeufs').then(m => m.InsererOeufsComponent) },

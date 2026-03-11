@@ -99,7 +99,7 @@ L'application est accessible sur **http://localhost:4200**.
 
 ```bash
 # 1. Démarrer la base de données
-docker start sqlserver
+sudo docker start sqlserver
 
 # 2. Démarrer le backend (terminal 1)
 cd backend && npm start
@@ -116,7 +116,7 @@ Ouvrir **http://localhost:4200** dans le navigateur.
 
 ```bash
 # Arrêter le conteneur SQL Server
-docker stop sqlserver
+sudo docker stop sqlserver
 
 # Les serveurs backend et frontend : Ctrl+C dans leurs terminaux
 ```

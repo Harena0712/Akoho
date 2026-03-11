@@ -29,6 +29,26 @@ const confSakafoController = {
     }
   },
 
+  async getPoidsAkoho(req, res) {
+    try {
+      const race = parseInt(req.query.race);
+      const { dateDebut, dateFin } = req.query;
+
+      if (!race || !dateDebut || !dateFin) {
+        return res.status(400).json({ error: 'Parametres race, dateDebut et dateFin requis' });
+      }
+
+      if (new Date(dateFin) < new Date(dateDebut)) {
+        return res.status(400).json({ error: 'dateFin doit etre superieure ou egale a dateDebut' });
+      }
+
+      const item = await ConfSakafo.getPoidsAkoho(race, dateDebut, dateFin);
+      res.json(item);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  },
+
   async create(req, res) {
     try {
       const item = await ConfSakafo.create(req.body);
