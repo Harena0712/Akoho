@@ -20,6 +20,89 @@
   margin: 0;
 }
 
+.synthese-card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+  margin-bottom: 1.25rem;
+  padding: 1rem;
+}
+
+.synthese-header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #1e293b;
+}
+
+.synthese-header p {
+  margin: 0.25rem 0 0.9rem;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.synthese-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 0.8rem;
+}
+
+.synthese-filter-row {
+  display: flex;
+  gap: 0.55rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.synthese-filter label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #475569;
+}
+
+.synthese-filter input {
+  max-width: 280px;
+  padding: 0.65rem 0.8rem;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  background: #f8fafc;
+}
+
+.btn-refresh-date {
+  border: none;
+  border-radius: 10px;
+  padding: 0.65rem 0.9rem;
+  background: #f59e0b;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-refresh-date:hover {
+  background: #d97706;
+}
+
+.table-synthese {
+  margin-bottom: 0.4rem;
+}
+
+.reste-cell {
+  color: #166534;
+  font-weight: 700;
+}
+
+.alert {
+  margin: 0.6rem 0;
+  padding: 0.75rem 0.9rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+}
+
+.alert-error {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
 .table-wrapper {
   background: #ffffff;
   border-radius: 12px;
@@ -76,6 +159,25 @@ tbody td {
 .oeufs-cell {
   color: #f59e0b;
   font-weight: 600;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.badge-eclos {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.badge-attente {
+  background: #fef9c3;
+  color: #854d0e;
 }
 
 .empty-state {

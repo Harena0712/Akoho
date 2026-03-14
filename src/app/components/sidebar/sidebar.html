@@ -9,15 +9,25 @@
   </a>
 
   <nav class="sidebar-nav">
+    <h1 style="color: rgb(255, 255, 255);font-size: 40px;">ETU004293</h1>
     <span class="nav-section">CONFIGURATION</span>
 
-    <a [routerLink]="'/configuration'" routerLinkActive="active" class="nav-item">
+    <a [routerLink]="'/configuration/races'" routerLinkActive="active" class="nav-item">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M12 3v18"/>
         <path d="M3 12h18"/>
         <circle cx="12" cy="12" r="3" opacity="0.5"/>
       </svg>
-      <span>Races et sakafo</span>
+      <span>Nouvelle race</span>
+    </a>
+
+    <a [routerLink]="'/configuration/sakafo'" routerLinkActive="active" class="nav-item">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 6h16"/>
+        <path d="M7 12h10"/>
+        <path d="M10 18h4"/>
+      </svg>
+      <span>Configuration sakafo</span>
     </a>
 
     <span class="nav-section">GESTION</span>
@@ -43,14 +53,14 @@
       </svg>
       <span>Oeufs récoltés</span>
     </a>
-
+<!-- 
     <a [routerLink]="'/eclosion-oeufs'" routerLinkActive="active" class="nav-item">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M12 2C8 2 5 7 5 13a7 7 0 0 0 14 0c0-6-3-11-7-11z"/>
         <path d="M9 14l3-3 3 3"/>
       </svg>
       <span>Éclosion</span>
-    </a>
+    </a> -->
 
     <span class="nav-section">RAPPORTS</span>
 
@@ -62,7 +72,7 @@
       <span>Situation</span>
     </a>
 
-    <a [routerLink]="'/poids-akoho'" routerLinkActive="active" class="nav-item">
+    <!-- <a [routerLink]="'/poids-akoho'" routerLinkActive="active" class="nav-item">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M12 2v20"/>
         <path d="M8 6h8"/>
@@ -71,6 +81,17 @@
         <path d="M9 14h6"/>
       </svg>
       <span>Poids akoho</span>
+    </a> -->
+
+    <a [routerLink]="'/tableau-conf-sakafo'" routerLinkActive="active" class="nav-item">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 6h18"/>
+        <path d="M3 12h18"/>
+        <path d="M3 18h18"/>
+        <path d="M8 3v18"/>
+        <path d="M16 3v18"/>
+      </svg>
+      <span>Tableau ConfSakafo</span>
     </a>
 
     <span class="nav-section">LISTES</span>
@@ -97,8 +118,6 @@
       </svg>
       <span>Oeufs récoltés</span>
     </a>
-
-    <h1 style="color: rgb(255, 255, 255);font-size: 40px;">ETU004293</h1>
   </nav>
 
   <div class="sidebar-footer">

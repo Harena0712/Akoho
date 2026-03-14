@@ -18,19 +18,32 @@
   </div>
 
   @if (filtered) {
+    <div class="dashboard-grid">
+      <div class="dashboard-card revenu-card">
+        <div class="dashboard-label">Revenu total</div>
+        <div class="dashboard-value">{{ totalRevenu | number }} Ar</div>
+      </div>
+      <div class="dashboard-card cout-card">
+        <div class="dashboard-label">Coût total</div>
+        <div class="dashboard-value">{{ totalCout | number }} Ar</div>
+      </div>
+    </div>
+
     <div class="table-wrapper">
       <table>
         <thead>
           <tr>
             <th>Lot</th>
-            <th>Nb poule restant</th>
+            <th>Nb poule reste</th>
             <th>Achat</th>
             <th>Prix nourriture</th>
-            <th>Nb poule mort</th>
-            <th>Poids moy.</th>
+            <th>Nb mort</th>
+            <th>Poids</th>
             <th>Prix lot</th>
             <th>Nb atody</th>
             <th>Valeur atody</th>
+            <th>Nb lamoka</th>
+            <th>Valeur lamoka</th>
             <th>Bénéfice</th>
           </tr>
         </thead>
@@ -42,10 +55,12 @@
               <td>{{ row.achat | number }} Ar</td>
               <td>{{ row.prixSakafo | number }} Ar</td>
               <td class="mort-cell">{{ row.maty }}</td>
-              <td>{{ row.poidsMoyenne }} kg</td>
+              <td>{{ row.poidsMoyenne }} g</td>
               <td>{{ row.prixLot | number }} Ar</td>
               <td>{{ row.nbAtody }}</td>
               <td>{{ row.valeurAtody | number }} Ar</td>
+              <td>{{ row.nbOeufsPourri }}</td>
+              <td>{{ row.valeurOeufsPourri | number }} Ar</td>
               <td>
                 <span class="benefice-badge" [style.background]="row.benefice >= 0 ? '#ecfdf5' : '#fef2f2'" [style.color]="row.benefice >= 0 ? '#059669' : '#dc2626'" [style.border-color]="row.benefice >= 0 ? '#a7f3d0' : '#fecaca'">
                   @if (row.benefice >= 0) { ▲ } @else { ▼ }
@@ -57,7 +72,7 @@
         </tbody>
         <tfoot>
           <tr>
-            <td colspan="9" class="total-label">Total Bénéfice</td>
+            <td colspan="11" class="total-label">Total Bénéfice</td>
             <td>
               <span class="benefice-badge" [style.background]="totalBenefice >= 0 ? '#ecfdf5' : '#fef2f2'" [style.color]="totalBenefice >= 0 ? '#059669' : '#dc2626'" [style.border-color]="totalBenefice >= 0 ? '#a7f3d0' : '#fecaca'">
                 @if (totalBenefice >= 0) { ▲ } @else { ▼ }

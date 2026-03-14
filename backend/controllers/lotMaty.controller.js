@@ -1,4 +1,7 @@
 const LotMaty = require('../models/lotMaty.model');
+const Lot = require('../models/lot.model');
+const Race = require('../models/race.model');
+const { getNbMaleFemelle } = require('../utils/repartition.utils');
 
 const lotMatyController = {
   async getAll(req, res) {
@@ -31,7 +34,27 @@ const lotMatyController = {
 
   async create(req, res) {
     try {
-      const item = await LotMaty.create(req.body);
+      const { idLot, nbMaty, date } = req.body;
+
+      const lot = await Lot.getById(parseInt(idLot));
+      if (!lot) {
+        return res.status(404).json({ error: 'Lot non trouvé' });
+      }
+
+      const race = await Race.getById(lot.idRace);
+      if (!race) {
+        return res.status(404).json({ error: 'Race non trouvée' });
+      }
+
+      const repartition = getNbMaleFemelle(race, nbMaty, 'mortMale', 'mortFemelle');
+
+      const item = await LotMaty.create({
+        idLot,
+        nbMaty,
+        nbMale: repartition.nbMale,
+        nbFemelle: repartition.nbFemelle,
+        date
+      });
       res.status(201).json(item);
     } catch (err) {
       res.status(500).json({ error: err.message });
@@ -40,7 +63,27 @@ const lotMatyController = {
 
   async update(req, res) {
     try {
-      const item = await LotMaty.update(parseInt(req.params.id), req.body);
+      const { idLot, nbMaty, date } = req.body;
+
+      const lot = await Lot.getById(parseInt(idLot));
+      if (!lot) {
+        return res.status(404).json({ error: 'Lot non trouvé' });
+      }
+
+      const race = await Race.getById(lot.idRace);
+      if (!race) {
+        return res.status(404).json({ error: 'Race non trouvée' });
+      }
+
+      const repartition = getNbMaleFemelle(race, nbMaty, 'mortMale', 'mortFemelle');
+
+      const item = await LotMaty.update(parseInt(req.params.id), {
+        idLot,
+        nbMaty,
+        nbMale: repartition.nbMale,
+        nbFemelle: repartition.nbFemelle,
+        date
+      });
       if (!item) return res.status(404).json({ error: 'Enregistrement non trouvé' });
       res.json(item);
     } catch (err) {

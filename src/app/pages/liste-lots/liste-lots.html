@@ -12,6 +12,8 @@
             <th>ID</th>
             <th>Race</th>
             <th>Nombre</th>
+            <th>Mâles</th>
+            <th>Femelles</th>
             <th>Âge (semaines)</th>
             <th>Date</th>
           </tr>
@@ -22,6 +24,8 @@
               <td class="id-cell">{{ lot.id }}</td>
               <td>{{ lot.race }}</td>
               <td>{{ lot.nb }}</td>
+              <td>{{ lot.nbMale ?? 0 }}</td>
+              <td>{{ lot.nbFemelle ?? 0 }}</td>
               <td>{{ lot.age }}</td>
               <td>{{ lot.date | date:'dd/MM/yyyy' }}</td>
             </tr>

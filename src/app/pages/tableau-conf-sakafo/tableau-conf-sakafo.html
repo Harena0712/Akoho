@@ -1,0 +1,122 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1>Tableau ConfSakafo</h1>
+    <p class="subtitle">Variation de poids et sakafo par race avec cumul par age.</p>
+  </div>
+
+  <div class="content-grid">
+    <div class="left-column">
+      @if (error) {
+        <div class="alert alert-error">{{ error }}</div>
+      }
+
+      @if (!error && rows.length > 0) {
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Race</th>
+                <th>Age</th>
+                <th>Variation poids (g)</th>
+                <th>Sakafo G</th>
+                <th>Somme poids par age (g)</th>
+                <th>Somme sakafo par age (g)</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of rows; track row.id) {
+                <tr>
+                  <td class="race-cell">{{ row.race }}</td>
+                  <td>S{{ row.age }}</td>
+                  <td>{{ row.variationPoid }}</td>
+                  <td>{{ row.sakafoG }}</td>
+                  <td>{{ row.cumulPoid }}</td>
+                  <td>{{ row.cumulSakafoG }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else if (!error) {
+        <div class="empty-state">Aucune configuration sakafo enregistrée</div>
+      }
+    </div>
+
+    <div class="right-column">
+      <div class="filter-card">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="race">Race</label>
+            <select id="race" [(ngModel)]="selectedRaceId" name="race">
+              <option [ngValue]="null" disabled>-- Selectionner une race --</option>
+              @for (race of races; track race.id) {
+                <option [ngValue]="race.id">{{ race.libelle }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="dateDebut">Date debut</label>
+            <input type="date" id="dateDebut" [(ngModel)]="dateDebut" name="dateDebut">
+          </div>
+
+          <div class="form-group">
+            <label for="dateFin">Date fin</label>
+            <input type="date" id="dateFin" [(ngModel)]="dateFin" name="dateFin">
+          </div>
+
+          <div class="action-group">
+            <button type="button" class="btn-calc" (click)="calculerPoids()" [disabled]="loading">
+              Voir le resultat
+            </button>
+          </div>
+        </div>
+
+        @if (poidsError) {
+          <div class="alert alert-error">{{ poidsError }}</div>
+        }
+      </div>
+
+      @if (result) {
+        <div class="result-card">
+          <div class="result-header">
+            <h2>Resultat</h2>
+            <p>{{ selectedRaceName }}</p>
+          </div>
+
+          <div class="result-grid">
+            <div class="result-item">
+              <span class="label">Date debut</span>
+              <strong>{{ result.dateDebut }}</strong>
+            </div>
+
+            <div class="result-item">
+              <span class="label">Date fin</span>
+              <strong>{{ result.dateFin }}</strong>
+            </div>
+
+            <div class="result-item">
+              <span class="label">Jours ecoules</span>
+              <strong>{{ result.jours }}</strong>
+            </div>
+
+            <div class="result-item">
+              <span class="label">Age precis</span>
+              <strong>{{ result.ageSemaines | number:'1.0-2' }} semaine(s)</strong>
+            </div>
+
+            <div class="result-item result-item-highlight">
+              <span class="label">Poids exact</span>
+              <strong>{{ result.poids | number:'1.0-2' }} g</strong>
+            </div>
+
+            <div class="result-item result-item-highlight">
+              <span class="label">Nourriture consommee</span>
+              <strong>{{ result.sakafoConsomme | number:'1.0-2' }} g</strong>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>

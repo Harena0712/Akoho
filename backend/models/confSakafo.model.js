@@ -1,33 +1,89 @@
 const { getPool, sql } = require('../config/db');
 
-function joursEntre(dateDebut, dateFin) {
-  const debut = new Date(dateDebut);
-  const fin = new Date(dateFin);
-  return Math.floor((fin - debut) / (1000 * 60 * 60 * 24));
+const DAY_MS = 1000 * 60 * 60 * 24;
+
+function normalizeDate(value) {
+  if (value instanceof Date) {
+    return new Date(Date.UTC(value.getUTCFullYear(), value.getUTCMonth(), value.getUTCDate()));
+  }
+
+  if (typeof value === 'string') {
+    const parts = value.split('-').map(Number);
+    if (parts.length === 3 && parts.every(Number.isFinite)) {
+      return new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
+    }
+  }
+
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    throw new Error('Date invalide');
+  }
+
+  return new Date(Date.UTC(parsed.getUTCFullYear(), parsed.getUTCMonth(), parsed.getUTCDate()));
 }
 
-function getConfSakafoForWeek(listConfSakafo, semaine) {
-  const matching = listConfSakafo
-    .filter(c => c.age <= semaine)
-    .sort((a, b) => b.age - a.age);
-  return matching.length > 0 ? matching[0] : null;
+function joursEntre(dateDebut, dateFin) {
+  const debut = normalizeDate(dateDebut);
+  const fin = normalizeDate(dateFin);
+  return Math.max(0, Math.floor((fin - debut) / DAY_MS));
 }
 
 function calculPoidsExact(listConfSakafo, ageSemaines) {
-  if (ageSemaines < 0) return 0;
+  if (ageSemaines < 0 || !listConfSakafo || listConfSakafo.length === 0) return 0;
+
+  const ordered = listConfSakafo.slice().sort((a, b) => a.age - b.age);
 
   const semainesCompletes = Math.floor(ageSemaines);
   const fraction = ageSemaines - semainesCompletes;
 
   let total = 0;
+  let index = 0;
+  let currentConf = null;
+
   for (let semaine = 0; semaine <= semainesCompletes; semaine++) {
-    const conf = getConfSakafoForWeek(listConfSakafo, semaine);
-    total += conf ? conf.variationPoid : 0;
+    while (index < ordered.length && ordered[index].age <= semaine) {
+      currentConf = ordered[index];
+      index++;
+    }
+    total += currentConf ? currentConf.variationPoid : 0;
   }
 
   if (fraction > 0) {
-    const conf = getConfSakafoForWeek(listConfSakafo, semainesCompletes + 1);
-    total += conf ? conf.variationPoid * fraction : 0;
+    while (index < ordered.length && ordered[index].age <= (semainesCompletes + 1)) {
+      currentConf = ordered[index];
+      index++;
+    }
+    total += currentConf ? currentConf.variationPoid * fraction : 0;
+  }
+
+  return Math.round(total * 100) / 100;
+}
+
+function calculSakafoConsommeExact(listConfSakafo, ageSemaines) {
+  if (ageSemaines < 0 || !listConfSakafo || listConfSakafo.length === 0) return 0;
+
+  const ordered = listConfSakafo.slice().sort((a, b) => a.age - b.age);
+  const semainesCompletes = Math.floor(ageSemaines);
+  const fraction = ageSemaines - semainesCompletes;
+
+  let total = 0;
+  let index = 0;
+  let currentConf = null;
+
+  for (let semaine = 0; semaine <= semainesCompletes; semaine++) {
+    while (index < ordered.length && ordered[index].age <= semaine) {
+      currentConf = ordered[index];
+      index++;
+    }
+    total += currentConf ? currentConf.sakafoG : 0;
+  }
+
+  if (fraction > 0) {
+    while (index < ordered.length && ordered[index].age <= (semainesCompletes + 1)) {
+      currentConf = ordered[index];
+      index++;
+    }
+    total += currentConf ? currentConf.sakafoG * fraction : 0;
   }
 
   return Math.round(total * 100) / 100;
@@ -57,23 +113,30 @@ const ConfSakafo = {
   },
 
   async getPoidsAkoho(race, dateDebut, dateFin) {
+    const raceId = Number(race);
+    if (!Number.isInteger(raceId) || raceId <= 0) {
+      throw new Error('Race invalide');
+    }
+
     const pool = await getPool();
     const result = await pool.request()
-      .input('idRace', sql.Int, race)
+      .input('idRace', sql.Int, raceId)
       .query('SELECT * FROM confSakafo WHERE idRace = @idRace ORDER BY age');
 
     const listConfSakafo = result.recordset;
     const jours = joursEntre(dateDebut, dateFin);
     const ageSemaines = jours / 7;
     const poids = calculPoidsExact(listConfSakafo, ageSemaines);
+    const sakafoConsomme = calculSakafoConsommeExact(listConfSakafo, ageSemaines);
 
     return {
-      race: Number(race),
+      race: raceId,
       dateDebut,
       dateFin,
       jours,
       ageSemaines: Math.round(ageSemaines * 100) / 100,
-      poids
+      poids,
+      sakafoConsomme
     };
   },
 

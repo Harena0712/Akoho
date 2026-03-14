@@ -11,8 +11,11 @@ GO
 
 IF NOT EXISTS (SELECT 1 FROM race)
 BEGIN
-    INSERT INTO race (libelle, puGg, pvGg, prixAtody) VALUES
-    ('borbonèze',               5	,  15	,  500);
+    INSERT INTO race (
+        libelle, puGg, pvGg, prixAtody,
+        capaciteOeufs, male, femelle, oeufPourri, mortMale, mortFemelle, nbJourIncubation
+    ) VALUES
+    ('borbonèze', 5, 15, 500, 40, 40, 60, 8, 60, 40, 30);
 END
 GO
 
@@ -58,8 +61,9 @@ GO
 -- ====================================
 IF NOT EXISTS (SELECT 1 FROM lot)
 BEGIN
-    INSERT INTO lot (idRace, nb, age, date, PU) VALUES
-    (1,  500, 0, '2026-01-01', 500);
+    INSERT INTO lot (idRace, nb, nbMale, nbFemelle, age, date, PU) VALUES
+    (1, 500, 200, 300, 0, '2026-01-01', 500),
+    (1, 320, 128, 192, 3, '2025-12-20', 520);
 END
 GO
 
@@ -68,8 +72,10 @@ GO
 -- ====================================
 IF NOT EXISTS (SELECT 1 FROM lotMaty)
 BEGIN
-    INSERT INTO lotMaty (idLot, nbMaty, date) VALUES
-    (1,  15, '2026-01-02');
+    INSERT INTO lotMaty (idLot, nbMaty, nbMale, nbFemelle, date) VALUES
+    (1, 15, 9, 6, '2026-02-01'),
+    (1, 12, 7, 5, '2026-02-18'),
+    (2, 9, 5, 4, '2026-01-25');
 END
 GO
 
@@ -87,9 +93,8 @@ GO
 -- ====================================
 -- Données de test : incubation
 -- ====================================
--- IF NOT EXISTS (SELECT 1 FROM incubation)
--- BEGIN
---     INSERT INTO incubation (idLotAtody, nbAtodyF, date) VALUES
---     (1, 30, '2026-03-01');   -- 30 oeufs éclos du lotAtody#4 → lot#6
--- END
--- GO
+IF NOT EXISTS (SELECT 1 FROM incubation)
+BEGIN
+    PRINT 'Incubation seed ignoree (test processByDate automatique).';
+END
+GO

@@ -9,26 +9,29 @@ GO
 -- ====================================
 
 -- Suppression dans l'ordre (respecter les foreign keys)
-DELETE FROM incubation;
-DELETE FROM lotAtody;
-DELETE FROM lotMaty;
-DELETE FROM lot;
-DELETE FROM confSakafo;
-DELETE FROM race;
+DROP TABLE incubation;
+DROP TABLE lotAtody;
+DROP TABLE lotMaty;
+DROP TABLE lot;
+DROP TABLE confSakafo;
+DROP TABLE race;
 GO
 
--- Réinitialisation des identités
-DBCC CHECKIDENT ('incubation', RESEED, 0);
-DBCC CHECKIDENT ('lotAtody', RESEED, 0);
-DBCC CHECKIDENT ('lotMaty', RESEED, 0);
-DBCC CHECKIDENT ('lot', RESEED, 0);
-DBCC CHECKIDENT ('confSakafo', RESEED, 0);
-DBCC CHECKIDENT ('race', RESEED, 0);
-GO
+-- -- Réinitialisation des identités
+-- DBCC CHECKIDENT ('incubation', RESEED, 0);
+-- DBCC CHECKIDENT ('lotAtody', RESEED, 0);
+-- DBCC CHECKIDENT ('lotMaty', RESEED, 0);
+-- DBCC CHECKIDENT ('lot', RESEED, 0);
+-- DBCC CHECKIDENT ('confSakafo', RESEED, 0);
+-- DBCC CHECKIDENT ('race', RESEED, 0);
+-- GO
 
--- Réinsertion des données de base
--- INSERT INTO race (libelle, puGg, pvGg, prixAtody) VALUES
--- ('borbonèze',          5.0, 15.0, 500);
+-- Réinsertion des données de base (exemple de scénario)
+-- INSERT INTO race (
+--   libelle, puGg, pvGg, prixAtody,
+--   capaciteOeufs, male, femelle, oeufPourri, mortMale, mortFemelle, nbJourIncubation
+-- ) VALUES
+-- ('borbonèze', 5.0, 15.0, 500, 40, 40, 60, 8, 60, 40, 30);
 -- GO
 
 -- INSERT INTO confSakafo (age, idRace, variationPoid, sakafoG) VALUES
@@ -62,38 +65,27 @@ GO
 -- GO
 
 -- Données de test : lot
--- INSERT INTO lot (idRace, nb, age, date, PU) VALUES
--- (1, 100, 2, '2026-02-01', 760),
--- (2, 150, 3, '2026-01-25', 630),
--- (3,  80, 1, '2026-02-15', 360),
--- (4, 200, 4, '2026-01-15', 836),
--- (5, 120, 5, '2026-01-10', 395),
--- (4,  30, 0, '2026-03-01', 0);
+-- INSERT INTO lot (idRace, nb, nbMale, nbFemelle, age, date, PU) VALUES
+-- (1, 500, 200, 300, 0, '2026-01-01', 500),
+-- (1, 320, 128, 192, 3, '2025-12-20', 520);
 -- GO
 
 -- Données de test : lotMaty
--- INSERT INTO lotMaty (idLot, nbMaty, date) VALUES
--- (1,  5, '2026-02-10'),
--- (1,  3, '2026-02-20'),
--- (2, 10, '2026-02-05'),
--- (4,  8, '2026-02-01'),
--- (4,  4, '2026-02-15'),
--- (5,  6, '2026-01-25');
+-- INSERT INTO lotMaty (idLot, nbMaty, nbMale, nbFemelle, date) VALUES
+-- (1, 15, 9, 6, '2026-02-01'),
+-- (1, 12, 7, 5, '2026-02-18'),
+-- (2, 9, 5, 4, '2026-01-25');
 -- GO
 
 -- Données de test : lotAtody
 -- INSERT INTO lotAtody (idLot, nbAtody, date) VALUES
--- (1,  50, '2026-02-15'),
--- (2,  80, '2026-02-10'),
--- (2,  60, '2026-02-25'),
--- (4,  70, '2026-02-05'),
--- (5,  70, '2026-01-30'),
--- (5,  45, '2026-02-20');
+-- (1, 100, '2026-02-02'),
+-- (1, 150, '2026-02-15'),
+-- (2, 80,  '2026-01-30');
 -- GO
 
 -- Données de test : incubation
--- INSERT INTO incubation (idLotAtody, nbAtodyF, date) VALUES
--- (4, 30, '2026-03-01');
+-- Laisser vide pour valider processByDate auto
 -- GO
 
 -- PRINT 'Restauration terminée avec succès.';

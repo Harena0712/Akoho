@@ -29,24 +29,28 @@ const LotMaty = {
     return result.recordset;
   },
 
-  async create({ idLot, nbMaty, date }) {
+  async create({ idLot, nbMaty, nbMale = 0, nbFemelle = 0, date }) {
     const pool = await getPool();
     const result = await pool.request()
       .input('idLot', sql.Int, idLot)
       .input('nbMaty', sql.Int, nbMaty)
+      .input('nbMale', sql.Int, nbMale)
+      .input('nbFemelle', sql.Int, nbFemelle)
       .input('date', sql.Date, date)
-      .query('INSERT INTO lotMaty (idLot, nbMaty, date) OUTPUT INSERTED.* VALUES (@idLot, @nbMaty, @date)');
+      .query('INSERT INTO lotMaty (idLot, nbMaty, nbMale, nbFemelle, date) OUTPUT INSERTED.* VALUES (@idLot, @nbMaty, @nbMale, @nbFemelle, @date)');
     return result.recordset[0];
   },
 
-  async update(id, { idLot, nbMaty, date }) {
+  async update(id, { idLot, nbMaty, nbMale = 0, nbFemelle = 0, date }) {
     const pool = await getPool();
     const result = await pool.request()
       .input('id', sql.Int, id)
       .input('idLot', sql.Int, idLot)
       .input('nbMaty', sql.Int, nbMaty)
+      .input('nbMale', sql.Int, nbMale)
+      .input('nbFemelle', sql.Int, nbFemelle)
       .input('date', sql.Date, date)
-      .query('UPDATE lotMaty SET idLot=@idLot, nbMaty=@nbMaty, date=@date WHERE id=@id; SELECT * FROM lotMaty WHERE id=@id');
+      .query('UPDATE lotMaty SET idLot=@idLot, nbMaty=@nbMaty, nbMale=@nbMale, nbFemelle=@nbFemelle, date=@date WHERE id=@id; SELECT * FROM lotMaty WHERE id=@id');
     return result.recordset[0];
   },
 

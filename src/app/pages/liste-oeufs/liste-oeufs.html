@@ -4,6 +4,56 @@
     <p class="subtitle">Historique des oeufs récoltés par lot</p>
   </div>
 
+  <div class="synthese-card">
+    <div class="synthese-header">
+      <h2>Synthèse des oeufs par lot</h2>
+      <p>Capacité max, oeufs obtenus, reste selon une date donnée</p>
+    </div>
+    <div class="synthese-filter">
+      <label for="dateReference">Date de référence</label>
+      <div class="synthese-filter-row">
+        <input id="dateReference" type="date" [(ngModel)]="dateReference" (change)="chargerCapacites()">
+        <button type="button" class="btn-refresh-date" (click)="refreshDateReference()">
+          Aujourd'hui
+        </button>
+      </div>
+    </div>
+    @if (capaciteError) {
+      <div class="alert alert-error">{{ capaciteError }}</div>
+    }
+
+    @if (!capaciteError && capacites.length > 0) {
+      <div class="table-wrapper table-synthese">
+        <table>
+          <thead>
+            <tr>
+              <th>Lot</th>
+              <th>Race</th>
+              <th>Poules</th>
+              <th>Capacité/ poule</th>
+              <th>Max oeufs</th>
+              <th>Déjà obtenus</th>
+              <th>Reste</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (c of capacites; track c.idLot) {
+              <tr>
+                <td class="id-cell">LOT-{{ c.idLot }}</td>
+                <td>{{ c.race }}</td>
+                <td>{{ c.nbFemelle }}</td>
+                <td>{{ c.capaciteOeufs }}</td>
+                <td>{{ c.maxOeufs }}</td>
+                <td>{{ c.oeufsObtenus }}</td>
+                <td class="reste-cell">{{ c.oeufsRestants }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+
   @if (oeufs.length > 0) {
     <div class="table-wrapper">
       <table>
@@ -14,6 +64,8 @@
             <th>Race</th>
             <th>Nb oeufs</th>
             <th>Date</th>
+            <th>Date d'éclosion</th>
+            <th>État</th>
           </tr>
         </thead>
         <tbody>
@@ -24,6 +76,14 @@
               <td>{{ o.race }}</td>
               <td class="oeufs-cell">{{ o.nbAtody }}</td>
               <td>{{ o.date | date:'dd/MM/yyyy' }}</td>
+              <td>{{ o.dateEclosion | date:'dd/MM/yyyy' }}</td>
+              <td>
+                @if (o.etat) {
+                  <span class="badge badge-eclos">Éclos</span>
+                } @else {
+                  <span class="badge badge-attente">En attente</span>
+                }
+              </td>
             </tr>
           }
         </tbody>

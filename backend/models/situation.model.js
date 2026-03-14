@@ -1,9 +1,20 @@
 const { getPool, sql } = require('../config/db');
+const ConfSakafo = require('./confSakafo.model');
 
 const DAY_MS = 1000 * 60 * 60 * 24;
 
 function toDate(value) {
   return value instanceof Date ? value : new Date(value);
+}
+
+function addDays(date, days) {
+  const result = new Date(toDate(date));
+  result.setDate(result.getDate() + days);
+  return result;
+}
+
+function getPoidsDateDebut(lot) {
+  return addDays(lot.date, -(lot.age * 7));
 }
 
 function buildRaceMap(listRace) {
@@ -17,6 +28,35 @@ function buildSumByLot(list, date, valueKey) {
   for (const item of list) {
     if (toDate(item.date) > targetDate) continue;
     sums.set(item.idLot, (sums.get(item.idLot) || 0) + item[valueKey]);
+  }
+
+  return sums;
+}
+
+function buildAtodyDisponibleByLot(listLotAtody, listIncubation, date) {
+  const targetDate = toDate(date);
+  const eclosMap = new Map();
+
+  for (const incubation of listIncubation) {
+    if (toDate(incubation.date) > targetDate) continue;
+    const lotAtodyId = incubation.idLotAtody;
+    const current = eclosMap.get(lotAtodyId);
+    if (!current || toDate(incubation.date) < current) {
+      eclosMap.set(lotAtodyId, toDate(incubation.date));
+    }
+  }
+
+  const sums = new Map();
+
+  for (const lotAtody of listLotAtody) {
+    if (toDate(lotAtody.date) > targetDate) continue;
+
+    const eclosDate = eclosMap.get(lotAtody.id);
+    if (eclosDate && eclosDate <= targetDate) {
+      continue;
+    }
+
+    sums.set(lotAtody.idLot, (sums.get(lotAtody.idLot) || 0) + lotAtody.nbAtody);
   }
 
   return sums;
@@ -342,9 +382,9 @@ function achatLotInit(lot) {
  */
 function prixSakafo(lot, race, listLotMaty, listConfSakafo, date) {
   const maty = nbAkohoMaty(lot, listLotMaty, date);
-  const nbMoyen = (lot.nb - maty) / 2;
+  const nbMoyen = lot.nb - maty;
   const totalSakafo = totalSakafoParPoule(lot, listConfSakafo, date);
-  return Math.round(nbMoyen * totalSakafo * race.puGg * 100) / 100;
+  // return Math.round(nbMoyen * totalSakafo * race.puGg * 100) / 100;
   return nbMoyen * totalSakafo * race.puGg
 }
 
@@ -352,11 +392,15 @@ function prixSakafo(lot, race, listLotMaty, listConfSakafo, date) {
  * Prix du lot = nbRestant * poidsActuel * pvGg
  * Utilise le poids actuel (pas le moyen) car on vend au poids réel
  */
-function prixLot(lot, race, listLotMaty, listConfSakafo, date) {
+async function prixLot(lot, race, listLotMaty, listConfSakafo, date) {
   const nb = nbAkohoReste(lot, listLotMaty, date);
-  const poids = poidsActuel(lot, listConfSakafo, date);
-  // return Math.round(nb * poids * race.pvGg * 100) / 100;
-  return nb * poids * race.pvGg;
+  const poidsInfo = await ConfSakafo.getPoidsAkoho(lot.idRace, getPoidsDateDebut(lot), date);
+  const poids = poidsInfo.poids;
+  // console.log(`Calcul prixLot pour Lot ${lot.id} - nb: ${nb}, poids: ${poids}, pvGg: ${race.pvGg}, prixLot: ${nb * poids * race.pvGg}`);
+  return {
+    prix: nb * poids * race.pvGg,
+    poids
+  };
 }
 
 /**
@@ -379,6 +423,28 @@ function valeurAtody(lot, race, listLotAtody, date) {
 }
 
 /**
+ * Pour les lots issus d'éclosion (PU=0), estimer les oeufs pourris initiaux
+ * à partir du taux race.oeufPourri et du nombre de poussins viables (lot.nb).
+ */
+function infoOeufsPourriPourLotEclos(lot, race) {
+  if (!race || Number(lot.PU) !== 0) {
+    return { nbOeufsPourri: 0, valeurOeufsPourri: 0 };
+  }
+
+  const tauxPourri = (Number(race.oeufPourri) || 0) / 100;
+  if (tauxPourri <= 0 || tauxPourri >= 1) {
+    return { nbOeufsPourri: 0, valeurOeufsPourri: 0 };
+  }
+
+  const nbViables = Number(lot.nb) || 0;
+  const nbTotalOeufs = Math.round(nbViables / (1 - tauxPourri));
+  const nbOeufsPourri = Math.max(0, nbTotalOeufs - nbViables);
+  const valeurOeufsPourri = nbOeufsPourri * (Number(race.prixAtody) || 0);
+
+  return { nbOeufsPourri, valeurOeufsPourri };
+}
+
+/**
  * Bénéfice = prixLot + valeurAtody - achat - prixSakafo
  */
 function benefice(prixLotVal, valeurAtodyVal, achatVal, prixSakafoVal) {
@@ -397,23 +463,25 @@ const Situation = {
     const targetDate = toDate(date);
 
     // Récupérer toutes les données nécessaires
-    const [lotsRes, racesRes, lotMatyRes, lotAtodyRes, confSakafoRes] = await Promise.all([
+    const [lotsRes, racesRes, lotMatyRes, lotAtodyRes, confSakafoRes, incubationRes] = await Promise.all([
       pool.request().input('date', sql.Date, date).query('SELECT * FROM lot WHERE date <= @date'),
       pool.request().query('SELECT * FROM race'),
       pool.request().query('SELECT * FROM lotMaty'),
       pool.request().query('SELECT * FROM lotAtody'),
       pool.request().query('SELECT * FROM confSakafo'),
+      pool.request().query('SELECT idLotAtody, date FROM incubation'),
     ]);
 
     const listRace = racesRes.recordset;
     const listLotMaty = lotMatyRes.recordset;
     const listLotAtody = lotAtodyRes.recordset;
     const listConfSakafo = confSakafoRes.recordset;
+    const listIncubation = incubationRes.recordset;
     const lots = lotsRes.recordset;
 
     const raceMap = buildRaceMap(listRace);
     const matyByLot = buildSumByLot(listLotMaty, targetDate, 'nbMaty');
-    const atodyByLot = buildSumByLot(listLotAtody, targetDate, 'nbAtody');
+    const atodyByLot = buildAtodyDisponibleByLot(listLotAtody, listIncubation, targetDate);
     const maxWeek = lots.reduce((max, lot) => {
       const jours = Math.floor((targetDate - toDate(lot.date)) / DAY_MS);
       const ageSemaines = lot.age + (jours / 7);
@@ -422,19 +490,24 @@ const Situation = {
     const confLookup = buildConfLookup(listConfSakafo, maxWeek);
 
     // Calculer la situation pour chaque lot
-    return lots.map(lot => {
+    return Promise.all(lots.map(async (lot) => {
       const race = raceMap.get(lot.idRace);
       const maty = matyByLot.get(lot.id) || 0;
       const nbReste = lot.nb - maty;
       const achat = achatLotInit(lot);
       const totalSakafo = totalSakafoParPoule(lot, confLookup, date);
-      const sakafo = Math.round((((lot.nb - maty) / 2) * totalSakafo * (race ? race.puGg : 0)) * 100) / 100;
-      const poids = poidsMoyenne(lot, confLookup, date);
-      const poidsReel = poidsActuel(lot, confLookup, date);
-      const prix = nbReste * poidsReel * (race ? race.pvGg : 0);
+      const sakafo = Math.round((nbReste * totalSakafo * (race ? race.puGg : 0)) * 100) / 100;
+      // console.log(`Lot ${lot.id} - nbReste: ${nbReste}, totalSakafo: ${totalSakafo}, sakafo prix: ${race.puGg}, sakafo total: ${sakafo}`);
+      const lotPrixInfo = race
+        ? await prixLot(lot, race, listLotMaty, confLookup, date)
+        : { prix: 0, poids: 0 };
+      // console.log(`Lot ${lot.id} - prixLot: ${lotPrixInfo.prix}, poids pour prixLot: ${lotPrixInfo.poids}`);
+      const poidsParPoule = lotPrixInfo.poids;
+      const prix = lotPrixInfo.prix;
       const oeufs = atodyByLot.get(lot.id) || 0;
       const vAtody = oeufs * (race ? race.prixAtody : 0);
-      const benef = benefice(prix, vAtody, achat, sakafo);
+      const oeufsPourriInfo = infoOeufsPourriPourLotEclos(lot, race);
+      const benef = benefice(prix, vAtody, achat, sakafo) - oeufsPourriInfo.valeurOeufsPourri;
 
       return {
         lotId: lot.id,
@@ -444,13 +517,15 @@ const Situation = {
         achat,
         prixSakafo: sakafo,
         maty,
-        poidsMoyenne: poids,
+        poidsMoyenne: poidsParPoule,
         prixLot: prix,
         nbAtody: oeufs,
         valeurAtody: vAtody,
+        nbOeufsPourri: oeufsPourriInfo.nbOeufsPourri,
+        valeurOeufsPourri: oeufsPourriInfo.valeurOeufsPourri,
         benefice: benef
       };
-    });
+    }));
   },
 
   // Export des fonctions utilitaires pour tests ou réutilisation
@@ -464,6 +539,7 @@ const Situation = {
     prixLot,
     nbAtody,
     valeurAtody,
+    infoOeufsPourriPourLotEclos,
     benefice,
     joursEcoules,
     ageTotalJours,

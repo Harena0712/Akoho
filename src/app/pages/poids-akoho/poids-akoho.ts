@@ -57,10 +57,12 @@ export class PoidsAkohoComponent {
       next: (data) => {
         this.result = data;
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.error = err.error?.error || 'Erreur lors du calcul du poids';
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }

@@ -1,0 +1,18 @@
+{
+  "routes": {
+    "/": {},
+    "/configuration": {},
+    "/configuration/races": {},
+    "/configuration/sakafo": {},
+    "/eclosion-oeufs": {},
+    "/inserer-lot": {},
+    "/inserer-mort": {},
+    "/inserer-oeufs": {},
+    "/liste-lots": {},
+    "/liste-morts": {},
+    "/liste-oeufs": {},
+    "/poids-akoho": {},
+    "/situation": {},
+    "/tableau-conf-sakafo": {}
+  }
+}

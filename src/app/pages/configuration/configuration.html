@@ -1,117 +1,64 @@
 <div class="page-container">
-  <div class="config-layout">
+  <div class="config-layout single-column-layout">
     <div class="page-intro">
-      <h1>Configuration de base</h1>
-      <p>Ajoutez une race puis définissez les parametres de sakafo selon l'age.</p>
+      <!-- <div class="page-switch">
+        <a href="/configuration/races" class="switch-link active">Nouvelle race</a>
+        <a href="/configuration/sakafo" class="switch-link">Configuration sakafo</a>
+      </div> -->
+
+      <h1>Nouvelle race</h1>
+      <p>Ajoutez une race avec ses paramètres de prix avant de définir la configuration sakafo.</p>
     </div>
 
-    <div class="forms-grid">
-      <div class="form-card">
-        <div class="card-header race-header">
-          <div class="icon-circle">
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 3v18"/>
-              <path d="M3 12h18"/>
-              <circle cx="12" cy="12" r="3" opacity="0.5"/>
-            </svg>
-          </div>
-          <h2>Nouvelle race</h2>
-          <p class="subtitle">Créez une race avec ses valeurs de prix.</p>
+    <div class="form-card">
+      <div class="card-header race-header">
+        <div class="icon-circle">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3v18"/>
+            <path d="M3 12h18"/>
+            <circle cx="12" cy="12" r="3" opacity="0.5"/>
+          </svg>
         </div>
-
-        @if (raceMessage) {
-          <div class="alert alert-success">{{ raceMessage }}</div>
-        }
-        @if (raceError) {
-          <div class="alert alert-error">{{ raceError }}</div>
-        }
-
-        <form (ngSubmit)="onRaceSubmit()" class="form-body">
-          <div class="form-group">
-            <label for="raceLibelle">Libellé</label>
-            <input type="text" id="raceLibelle" [(ngModel)]="raceLibelle" name="raceLibelle" placeholder="Ex: Gasy mena" required>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label for="racePuGg">PU g/g</label>
-              <input type="number" id="racePuGg" [(ngModel)]="racePuGg" name="racePuGg" step="0.01" placeholder="Ex: 1.5" required>
-            </div>
-            <div class="form-group">
-              <label for="racePvGg">PV g/g</label>
-              <input type="number" id="racePvGg" [(ngModel)]="racePvGg" name="racePvGg" step="0.01" placeholder="Ex: 2.3" required>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="racePrixAtody">Prix d'un oeuf</label>
-            <input type="number" id="racePrixAtody" [(ngModel)]="racePrixAtody" name="racePrixAtody" step="0.01" placeholder="Ex: 700" required>
-          </div>
-
-          <button type="submit" class="btn-submit">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
-            Enregistrer la race
-          </button>
-        </form>
+        <h2>Nouvelle race</h2>
+        <p class="subtitle">Créez une race avec ses valeurs de prix.</p>
       </div>
 
-      <div class="form-card">
-        <div class="card-header conf-header">
-          <div class="icon-circle">
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M4 6h16"/>
-              <path d="M7 12h10"/>
-              <path d="M10 18h4"/>
-            </svg>
-          </div>
-          <h2>Configuration sakafo</h2>
-          <p class="subtitle">Renseignez la consommation et la variation de poids.</p>
+      @if (raceMessage) {
+        <div class="alert alert-success">{{ raceMessage }}</div>
+      }
+      @if (raceError) {
+        <div class="alert alert-error">{{ raceError }}</div>
+      }
+
+      <form (ngSubmit)="onRaceSubmit()" class="form-body">
+        <div class="form-group">
+          <label for="raceLibelle">Libellé</label>
+          <input type="text" id="raceLibelle" [(ngModel)]="raceLibelle" name="raceLibelle" placeholder="Ex: Gasy mena" required>
         </div>
 
-        @if (confMessage) {
-          <div class="alert alert-success">{{ confMessage }}</div>
-        }
-        @if (confError) {
-          <div class="alert alert-error">{{ confError }}</div>
-        }
-
-        <form (ngSubmit)="onConfSubmit()" class="form-body">
+        <div class="form-row">
           <div class="form-group">
-            <label for="confIdRace">Race</label>
-            <select id="confIdRace" [(ngModel)]="confIdRace" name="confIdRace" required>
-              <option [ngValue]="null" disabled>-- Sélectionner une race --</option>
-              @for (race of races; track race.id) {
-                <option [ngValue]="race.id">{{ race.libelle }}</option>
-              }
-            </select>
+            <label for="racePuGg">PU g/g</label>
+            <input type="number" id="racePuGg" [(ngModel)]="racePuGg" name="racePuGg" step="0.01" placeholder="Ex: 1.5" required>
           </div>
-
           <div class="form-group">
-            <label for="confAge">Age (semaines)</label>
-            <input type="number" id="confAge" [(ngModel)]="confAge" name="confAge" placeholder="Ex: 12" required>
+            <label for="racePvGg">PV g/g</label>
+            <input type="number" id="racePvGg" [(ngModel)]="racePvGg" name="racePvGg" step="0.01" placeholder="Ex: 2.3" required>
           </div>
+        </div>
 
-          <div class="form-row">
-            <div class="form-group">
-              <label for="confVariationPoid">Variation poids / jour (g)</label>
-              <input type="number" id="confVariationPoid" [(ngModel)]="confVariationPoid" name="confVariationPoid" step="0.01" placeholder="Ex: 3.2" required>
-            </div>
-            <div class="form-group">
-              <label for="confSakafoG">Sakafo / semaine (g)</label>
-              <input type="number" id="confSakafoG" [(ngModel)]="confSakafoG" name="confSakafoG" step="0.01" placeholder="Ex: 420" required>
-            </div>
-          </div>
+        <div class="form-group">
+          <label for="racePrixAtody">Prix d'un oeuf</label>
+          <input type="number" id="racePrixAtody" [(ngModel)]="racePrixAtody" name="racePrixAtody" step="0.01" placeholder="Ex: 700" required>
+        </div>
 
-          <button type="submit" class="btn-submit conf-button">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
-            Enregistrer la configuration
-          </button>
-        </form>
-      </div>
+        <button type="submit" class="btn-submit">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+          Enregistrer la race
+        </button>
+      </form>
     </div>
   </div>
 </div>

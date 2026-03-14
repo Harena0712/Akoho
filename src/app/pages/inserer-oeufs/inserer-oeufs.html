@@ -20,7 +20,7 @@
     <form (ngSubmit)="onSubmit()" class="form-body">
       <div class="form-group">
         <label for="idLot">Lot</label>
-        <select id="idLot" [(ngModel)]="idLot" name="idLot" required>
+        <select id="idLot" [(ngModel)]="idLot" name="idLot" (change)="onLotOrDateChange()" required>
           <option [ngValue]="null" disabled>-- Sélectionner un lot --</option>
           @for (lot of lots; track lot.id) {
             <option [ngValue]="lot.id">Lot #{{ lot.id }} ({{ lot.nb }} poules)</option>
@@ -35,10 +35,18 @@
 
       <div class="form-group">
         <label for="date">Date</label>
-        <input type="date" id="date" [(ngModel)]="date" name="date" required>
+        <input type="date" id="date" [(ngModel)]="date" name="date" (change)="onLotOrDateChange()" required>
       </div>
 
-      <button type="submit" class="btn-submit">
+      @if (capaciteLot) {
+        <div class="info-capacite">
+          <p><strong>Capacité max :</strong> {{ capaciteLot.maxOeufs }}</p>
+          <p><strong>Déjà obtenus :</strong> {{ capaciteLot.oeufsObtenus }}</p>
+          <p><strong>Reste :</strong> {{ capaciteLot.oeufsRestants }}</p>
+        </div>
+      }
+
+      <button type="submit" class="btn-submit" [disabled]="capaciteLot && capaciteLot.oeufsRestants <= 0">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M5 12h14M12 5l7 7-7 7"/>
         </svg>

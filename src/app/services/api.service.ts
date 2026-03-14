@@ -36,6 +36,12 @@ export class ApiService {
 
   // Lot Atody (oeufs récoltés)
   getLotAtody() { return this.http.get<any[]>(`${BASE}/lot-atody`); }
+  getCapaciteOeufsParDate(date: string) {
+    return this.http.get<any[]>(`${BASE}/lot-atody/capacite?date=${date}`);
+  }
+  getCapaciteOeufsParLotEtDate(idLot: number, date: string) {
+    return this.http.get<any>(`${BASE}/lot-atody/capacite/lot/${idLot}?date=${date}`);
+  }
   createLotAtody(data: { idLot: number; nbAtody: number; date: string }) {
     return this.http.post<any>(`${BASE}/lot-atody`, data);
   }

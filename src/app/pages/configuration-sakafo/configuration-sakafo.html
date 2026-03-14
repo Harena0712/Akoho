@@ -1,0 +1,69 @@
+<div class="page-container">
+  <div class="config-layout single-column-layout">
+    <div class="page-intro">
+      <!-- <div class="page-switch">
+        <a href="/configuration/races" class="switch-link">Nouvelle race</a>
+        <a href="/configuration/sakafo" class="switch-link active">Configuration sakafo</a>
+      </div> -->
+
+      <h1>Configuration sakafo</h1>
+      <p>Renseignez la consommation de sakafo et la variation de poids pour une race et un age donnés.</p>
+    </div>
+
+    <div class="form-card">
+      <div class="card-header conf-header">
+        <div class="icon-circle">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 6h16"/>
+            <path d="M7 12h10"/>
+            <path d="M10 18h4"/>
+          </svg>
+        </div>
+        <h2>Configuration sakafo</h2>
+        <p class="subtitle">Définissez la consommation et la variation de poids par semaine.</p>
+      </div>
+
+      @if (confMessage) {
+        <div class="alert alert-success">{{ confMessage }}</div>
+      }
+      @if (confError) {
+        <div class="alert alert-error">{{ confError }}</div>
+      }
+
+      <form (ngSubmit)="onConfSubmit()" class="form-body">
+        <div class="form-group">
+          <label for="confIdRace">Race</label>
+          <select id="confIdRace" [(ngModel)]="confIdRace" name="confIdRace" required>
+            <option [ngValue]="null" disabled>-- Sélectionner une race --</option>
+            @for (race of races; track race.id) {
+              <option [ngValue]="race.id">{{ race.libelle }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="confAge">Age (semaines)</label>
+          <input type="number" id="confAge" [(ngModel)]="confAge" name="confAge" placeholder="Ex: 12" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="confVariationPoid">Variation poids / jour (g)</label>
+            <input type="number" id="confVariationPoid" [(ngModel)]="confVariationPoid" name="confVariationPoid" step="0.01" placeholder="Ex: 3.2" required>
+          </div>
+          <div class="form-group">
+            <label for="confSakafoG">Sakafo / semaine (g)</label>
+            <input type="number" id="confSakafoG" [(ngModel)]="confSakafoG" name="confSakafoG" step="0.01" placeholder="Ex: 420" required>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-submit conf-button">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+          Enregistrer la configuration
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
