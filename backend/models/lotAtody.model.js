@@ -9,14 +9,14 @@ const LotAtody = {
         `SELECT
            l.id AS idLot,
            r.libelle AS race,
-           l.nbFemelle,
+           l.nbFemelle - ISNULL((SELECT SUM(lm.nbFemelle) FROM lotMaty lm WHERE lm.idLot = l.id AND lm.date <= @date), 0) AS nbFemelle,
            r.capaciteOeufs,
-           (ISNULL(l.nbFemelle, 0) * ISNULL(r.capaciteOeufs, 0)) AS maxOeufs,
+           (l.nbFemelle - ISNULL((SELECT SUM(lm.nbFemelle) FROM lotMaty lm WHERE lm.idLot = l.id AND lm.date <= @date), 0)) * ISNULL(r.capaciteOeufs, 0) AS maxOeufs,
            ISNULL(SUM(CASE WHEN la.date <= @date THEN la.nbAtody ELSE 0 END), 0) AS oeufsObtenus,
            CASE
-             WHEN (ISNULL(l.nbFemelle, 0) * ISNULL(r.capaciteOeufs, 0)) - ISNULL(SUM(CASE WHEN la.date <= @date THEN la.nbAtody ELSE 0 END), 0) < 0
+             WHEN ((l.nbFemelle - ISNULL((SELECT SUM(lm.nbFemelle) FROM lotMaty lm WHERE lm.idLot = l.id AND lm.date <= @date), 0)) * ISNULL(r.capaciteOeufs, 0)) - ISNULL(SUM(CASE WHEN la.date <= @date THEN la.nbAtody ELSE 0 END), 0) < 0
                THEN 0
-             ELSE (ISNULL(l.nbFemelle, 0) * ISNULL(r.capaciteOeufs, 0)) - ISNULL(SUM(CASE WHEN la.date <= @date THEN la.nbAtody ELSE 0 END), 0)
+             ELSE ((l.nbFemelle - ISNULL((SELECT SUM(lm.nbFemelle) FROM lotMaty lm WHERE lm.idLot = l.id AND lm.date <= @date), 0)) * ISNULL(r.capaciteOeufs, 0)) - ISNULL(SUM(CASE WHEN la.date <= @date THEN la.nbAtody ELSE 0 END), 0)
            END AS oeufsRestants
          FROM lot l
          JOIN race r ON r.id = l.idRace
@@ -36,14 +36,14 @@ const LotAtody = {
         `SELECT
            l.id AS idLot,
            r.libelle AS race,
-           l.nbFemelle,
+           l.nbFemelle - ISNULL((SELECT SUM(lm.nbFemelle) FROM lotMaty lm WHERE lm.idLot = l.id AND lm.date <= @date), 0) AS nbFemelle,
            r.capaciteOeufs,
-           (ISNULL(l.nbFemelle, 0) * ISNULL(r.capaciteOeufs, 0)) AS maxOeufs,
+           (l.nbFemelle - ISNULL((SELECT SUM(lm.nbFemelle) FROM lotMaty lm WHERE lm.idLot = l.id AND lm.date <= @date), 0)) * ISNULL(r.capaciteOeufs, 0) AS maxOeufs,
            ISNULL(SUM(CASE WHEN la.date <= @date THEN la.nbAtody ELSE 0 END), 0) AS oeufsObtenus,
            CASE
-             WHEN (ISNULL(l.nbFemelle, 0) * ISNULL(r.capaciteOeufs, 0)) - ISNULL(SUM(CASE WHEN la.date <= @date THEN la.nbAtody ELSE 0 END), 0) < 0
+             WHEN ((l.nbFemelle - ISNULL((SELECT SUM(lm.nbFemelle) FROM lotMaty lm WHERE lm.idLot = l.id AND lm.date <= @date), 0)) * ISNULL(r.capaciteOeufs, 0)) - ISNULL(SUM(CASE WHEN la.date <= @date THEN la.nbAtody ELSE 0 END), 0) < 0
                THEN 0
-             ELSE (ISNULL(l.nbFemelle, 0) * ISNULL(r.capaciteOeufs, 0)) - ISNULL(SUM(CASE WHEN la.date <= @date THEN la.nbAtody ELSE 0 END), 0)
+             ELSE ((l.nbFemelle - ISNULL((SELECT SUM(lm.nbFemelle) FROM lotMaty lm WHERE lm.idLot = l.id AND lm.date <= @date), 0)) * ISNULL(r.capaciteOeufs, 0)) - ISNULL(SUM(CASE WHEN la.date <= @date THEN la.nbAtody ELSE 0 END), 0)
            END AS oeufsRestants
          FROM lot l
          JOIN race r ON r.id = l.idRace

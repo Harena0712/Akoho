@@ -9,7 +9,19 @@ export class ApiService {
 
   // Race
   getRaces() { return this.http.get<any[]>(`${BASE}/race`); }
-  createRace(data: { libelle: string; puGg: number; pvGg: number; prixAtody: number }) {
+  createRace(data: {
+    libelle: string;
+    puGg: number;
+    pvGg: number;
+    prixAtody: number;
+    capaciteOeufs: number;
+    male: number;
+    femelle: number;
+    oeufPourri: number;
+    mortMale: number;
+    mortFemelle: number;
+    nbJourIncubation: number;
+  }) {
     return this.http.post<any>(`${BASE}/race`, data);
   }
 
