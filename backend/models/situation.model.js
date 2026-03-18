@@ -253,6 +253,49 @@ function totalSakafoParPoule(lot, listConfSakafo, date) {
   return total;
 }
 
+function totalSakafoLotAvecMortalite(lot, listLotMaty, listConfSakafo, date) {
+  const dateCreation = toDate(lot.date);
+  const dateCible = toDate(date);
+
+  if (dateCible <= dateCreation || lot.nb <= 0) return 0;
+
+  const mortsParDate = listLotMaty
+    .filter(m => m.idLot === lot.id)
+    .map(m => ({
+      date: toDate(m.date),
+      nbMaty: m.nbMaty
+    }))
+    .filter(m => m.date <= dateCible)
+    .sort((a, b) => a.date - b.date);
+
+  let nbVivants = lot.nb;
+  let dateDebutSegment = dateCreation;
+  let totalSakafoLot = 0;
+
+  for (const mort of mortsParDate) {
+    if (nbVivants <= 0) break;
+
+    if (mort.date > dateDebutSegment) {
+      const sakafoDebut = totalSakafoParPoule(lot, listConfSakafo, dateDebutSegment);
+      const sakafoFin = totalSakafoParPoule(lot, listConfSakafo, mort.date);
+      const sakafoSegmentParPoule = Math.max(0, sakafoFin - sakafoDebut);
+      totalSakafoLot += nbVivants * sakafoSegmentParPoule;
+    }
+
+    nbVivants = Math.max(0, nbVivants - mort.nbMaty);
+    dateDebutSegment = mort.date;
+  }
+
+  if (nbVivants > 0 && dateCible > dateDebutSegment) {
+    const sakafoDebut = totalSakafoParPoule(lot, listConfSakafo, dateDebutSegment);
+    const sakafoFin = totalSakafoParPoule(lot, listConfSakafo, dateCible);
+    const sakafoSegmentParPoule = Math.max(0, sakafoFin - sakafoDebut);
+    totalSakafoLot += nbVivants * sakafoSegmentParPoule;
+  }
+
+  return totalSakafoLot;
+}
+
 /**
  * Poids total d'une poule à un âge donné en semaines.
  * variationPoid à age 0 = poids initial (naissance)
@@ -274,7 +317,8 @@ function totalPoidsParPoule(idRace, ageSemaines, listConfSakafo) {
       total += conf ? conf.variationPoid * fraction : 0;
     }
 
-    return Math.round(total * 100) / 100;
+    // return Math.round(total * 100) / 100;
+    return total;
   }
 
   let total = 0;
@@ -289,8 +333,8 @@ function totalPoidsParPoule(idRace, ageSemaines, listConfSakafo) {
     total += conf ? conf.variationPoid * fraction : 0;
   }
 
-  return Math.round(total * 100) / 100;
-  // return total;
+  // return Math.round(total * 100) / 100;
+  return total;
 }
 
 /**
@@ -343,7 +387,8 @@ function poidsMoyenne(lot, listConfSakafo, date) {
       count++;
     }
 
-    return Math.round((sumPoids / count) * 100) / 100;
+    // return Math.round((sumPoids / count) * 100) / 100;
+    return sumPoids / count;
   }
 
   // Poids réel à chaque semaine complète (S0, S1, ... Sn)
@@ -362,8 +407,8 @@ function poidsMoyenne(lot, listConfSakafo, date) {
     count++;
   }
 
-  return Math.round((sumPoids / count) * 100) / 100;
-  // return sumPoids / count;
+  // return Math.round((sumPoids / count) * 100) / 100;
+  return sumPoids / count;
 }
 
 /**
@@ -381,11 +426,10 @@ function achatLotInit(lot) {
  * sakafoG = grammes par semaine, calculé précisément semaine par semaine
  */
 function prixSakafo(lot, race, listLotMaty, listConfSakafo, date) {
-  const maty = nbAkohoMaty(lot, listLotMaty, date);
-  const nbMoyen = lot.nb - maty;
-  const totalSakafo = totalSakafoParPoule(lot, listConfSakafo, date);
-  // return Math.round(nbMoyen * totalSakafo * race.puGg * 100) / 100;
-  return nbMoyen * totalSakafo * race.puGg
+  if (!race) return 0;
+  const totalSakafoLot = totalSakafoLotAvecMortalite(lot, listLotMaty, listConfSakafo, date);
+  // return Math.round(totalSakafoLot * race.puGg * 100) / 100;
+  return totalSakafoLot * race.puGg;
 }
 
 /**
@@ -495,9 +539,8 @@ const Situation = {
       const maty = matyByLot.get(lot.id) || 0;
       const nbReste = lot.nb - maty;
       const achat = achatLotInit(lot);
-      const totalSakafo = totalSakafoParPoule(lot, confLookup, date);
-      const sakafo = Math.round((nbReste * totalSakafo * (race ? race.puGg : 0)) * 100) / 100;
-      // console.log(`Lot ${lot.id} - nbReste: ${nbReste}, totalSakafo: ${totalSakafo}, sakafo prix: ${race.puGg}, sakafo total: ${sakafo}`);
+      const sakafo = prixSakafo(lot, race, listLotMaty, confLookup, date);
+      
       const lotPrixInfo = race
         ? await prixLot(lot, race, listLotMaty, confLookup, date)
         : { prix: 0, poids: 0 };

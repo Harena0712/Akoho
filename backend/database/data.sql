@@ -69,12 +69,12 @@ GO
 -- ====================================
 -- Données de test : lotMaty
 -- ====================================
-IF NOT EXISTS (SELECT 1 FROM lotMaty)
-BEGIN
-    INSERT INTO lotMaty (idLot, nbMaty, nbMale, nbFemelle, date) VALUES
-    (1, 15, 9, 6, '2026-02-01');
-END
-GO
+-- IF NOT EXISTS (SELECT 1 FROM lotMaty)
+-- BEGIN
+--     INSERT INTO lotMaty (idLot, nbMaty, nbMale, nbFemelle, date) VALUES
+--     (1, 15, 9, 6, '2026-02-01');
+-- END
+-- GO
 
 -- ====================================
 -- Données de test : lotAtody
