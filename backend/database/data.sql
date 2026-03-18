@@ -62,8 +62,7 @@ GO
 IF NOT EXISTS (SELECT 1 FROM lot)
 BEGIN
     INSERT INTO lot (idRace, nb, nbMale, nbFemelle, age, date, PU) VALUES
-    (1, 500, 200, 300, 0, '2026-01-01', 500),
-    (1, 320, 128, 192, 3, '2025-12-20', 520);
+    (1, 500, 0, 500, 0, '2026-01-01', 500);
 END
 GO
 
@@ -73,9 +72,7 @@ GO
 IF NOT EXISTS (SELECT 1 FROM lotMaty)
 BEGIN
     INSERT INTO lotMaty (idLot, nbMaty, nbMale, nbFemelle, date) VALUES
-    (1, 15, 9, 6, '2026-02-01'),
-    (1, 12, 7, 5, '2026-02-18'),
-    (2, 9, 5, 4, '2026-01-25');
+    (1, 15, 9, 6, '2026-02-01');
 END
 GO
 
