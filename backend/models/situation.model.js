@@ -4,12 +4,14 @@ const ConfSakafo = require('./confSakafo.model');
 const DAY_MS = 1000 * 60 * 60 * 24;
 
 function toDate(value) {
-  return value instanceof Date ? value : new Date(value);
+  const d = value instanceof Date ? new Date(value) : new Date(value);
+  d.setUTCHours(0, 0, 0, 0); // Normaliser à minuit UTC pour éviter les décalages de fuseau horaire
+  return d;
 }
 
 function addDays(date, days) {
   const result = new Date(toDate(date));
-  result.setDate(result.getDate() + days);
+  result.setUTCDate(result.getUTCDate() + days);
   return result;
 }
 
@@ -545,7 +547,10 @@ const Situation = {
         ? await prixLot(lot, race, listLotMaty, confLookup, date)
         : { prix: 0, poids: 0 };
       // console.log(`Lot ${lot.id} - prixLot: ${lotPrixInfo.prix}, poids pour prixLot: ${lotPrixInfo.poids}`);
-      const poidsParPoule = lotPrixInfo.poids;
+      // Utilise la fonction getPoidsAkoho de ConfSakafo pour obtenir le poids actuel (poidsMoyenne)
+      const poidsInfoForMoyenne = race ? await ConfSakafo.getPoidsAkoho(lot.idRace, getPoidsDateDebut(lot), date) : { poids: 0 };
+      const poidsParPoule = poidsInfoForMoyenne.poids;
+      // console.log(`Lot ${lot.id} - poids pour poidsMoyenne: ${poidsParPoule}`);
       const prix = lotPrixInfo.prix;
       const oeufs = atodyByLot.get(lot.id) || 0;
       const vAtody = oeufs * (race ? race.prixAtody : 0);
